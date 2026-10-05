@@ -1,7 +1,7 @@
 from alu import ALU
-from banco_registros import BancoRegistros
-from pc import PC
-from memoria_datos import MemoriaDatos
+from Componentes.banco_registros import BancoRegistros
+from Componentes.pc import PC
+from Componentes.memoria_datos import MemoriaDatos
 
 
 class UnidadProceso:

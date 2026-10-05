@@ -5,7 +5,8 @@ def main():
     print("Iniciando simulación MIPS32...")
     procesador = CPU()
 
-    procesador.cargar_instrucciones("Instrucciones.txt")
+    #procesador.cargar_instrucciones("Instrucciones.txt")
+    procesador.cargar_instrucciones("ejemploInstruccion.txt")
     # procesador.ejecutar_ciclo()
 
 
