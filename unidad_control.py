@@ -12,10 +12,7 @@ class UnidadControl:
         self.reg_write = 0
 
     def decodificar(self, instruccion_str):
-        """
-        Recibe el string de la instrucción (ej: 'addi $s0, $0, 1')
-        y activa las señales correspondientes.
-        """
+
         self.resetear_senales()
 
         if not instruccion_str or instruccion_str == "NOP":
@@ -29,11 +26,9 @@ class UnidadControl:
 
         if opcode in ["addi", "add", "sub", "and", "or", "slt", "sll", "andi"]:
             self.reg_write = 1
-            # Operaciones con inmediato usan alu_src = 1
             if opcode in ["addi", "andi"]:
                 self.alu_src = 1
                 self.reg_dst = 0
-            # Desplazamientos usan un inmediato (el shamt), lo tratamos igual
             elif opcode == "sll":
                 self.alu_src = 1
                 self.reg_dst = 1
