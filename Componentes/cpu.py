@@ -8,7 +8,7 @@ class CPU:
         self.etiquetas = {}
         self.mem_instrucciones = MemoriaInstrucciones()
         self.unidad_proceso = UnidadProceso()
-        self.unidad_control = UnidadControl(self.unidad_proceso) #va a utilizar la unidad de procesamiento
+        self.unidad_control = UnidadControl(self.unidad_proceso)
         self.pc = 0
 
     def cargar_datos(self, ruta_archivo):

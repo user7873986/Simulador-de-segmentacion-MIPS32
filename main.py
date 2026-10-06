@@ -1,4 +1,4 @@
-from cpu import CPU
+from Componentes.cpu import CPU
 
 
 def main():
