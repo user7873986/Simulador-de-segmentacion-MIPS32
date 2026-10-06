@@ -1,5 +1,8 @@
 class UnidadControl:
-    def __init__(self):
+    def __init__(self, unidad_procesamiento):
+
+        self.unidad_procesamiento = unidad_procesamiento
+        
         # Aquí irán las señales de control: RegDst, Branch, MemRead, etc.
         self.reg_dst = 0
         self.pc_src = 0
@@ -60,3 +63,7 @@ class UnidadControl:
 
         # Retornamos las partes para que la etapa ID (Decode) extraiga los registros
         return {"opcode": opcode, "args": args}
+
+
+
+#REGISTROS DE ACOPLAMIENTO POR ALGUN LADO DE AQUI
