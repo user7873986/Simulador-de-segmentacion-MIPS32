@@ -14,6 +14,8 @@ class Segmentacion:
         self.EX_MEM = RegistroAcoplamiento()
         self.MEM_WB = RegistroAcoplamiento()
 
+        self.WB_OUT = RegistroAcoplamiento()
+
     def simular(self):
         while not self.fin:
             self.ciclo_actual += 1
@@ -28,7 +30,13 @@ class Segmentacion:
 
             self.imprimir_estado()
 
-            # TODO: Definir cuándo self.fin = True (ej. cuando WB procese un NOP final)
+            self.imprimir_registros()
+
+            if (self.IF_ID.inst in [None, "NOP"] and
+                    self.ID_EX.inst in [None, "NOP"] and
+                    self.EX_MEM.inst in [None, "NOP"] and
+                    self.MEM_WB.inst in [None, "NOP"]):
+                self.fin = True
 
     # Usa la información de self.cpu.MEM_WB
     def fase_wb(self):
@@ -37,7 +45,7 @@ class Segmentacion:
 
         if not inst_str or inst_str == "NOP":
             # Usamos WB_OUT para decirle al bucle principal que ha salido un NOP o una burbuja
-            self.cpu.WB_OUT.inst = inst_str
+            self.WB_OUT.inst = inst_str
             return
 
         senales = self.MEM_WB.senales_control
@@ -58,7 +66,7 @@ class Segmentacion:
                 self.cpu.unidad_proceso.banco_registros.escribir(reg_destino, dato_a_escribir)
 
         # 4. Guardar en el registro de salida para contabilizar la instrucción completada
-        self.cpu.WB_OUT.inst = inst_str
+        self.WB_OUT.inst = inst_str
 
     # Usa la información de self.cpu.EX_MEM y escribe en MEM_WB
     def fase_mem(self):
@@ -180,12 +188,27 @@ class Segmentacion:
         rd = ""
 
         # 3. Extraer operandos y leer del hardware (Banco de Registros)
-        if opcode in ["addi", "lw", "sw"]:
+        if opcode == "addi":
             # Formato I (Ej: addi $t1, $t2, 100 -> args = ['$t1', '$t2', '100'])
             rt = args[0]
             rs = args[1]
             inmediato = int(args[2])
 
+            op1_val = self.cpu.unidad_proceso.banco_registros.leer(rs)
+            op2_val = self.cpu.unidad_proceso.banco_registros.leer(rt)
+
+        elif opcode in ["lw","sw"]:
+            # args llega como ['$s1', '0($0)']
+            rt = args[0]
+
+            # Limpiamos el paréntesis de cierre y partimos por el de apertura
+            # '0($0)' -> replace -> '0($0' -> split -> ['0', '$0']
+            partes_mem = args[1].replace(')', '').split('(')
+
+            inmediato = int(partes_mem[0])  # El offset numérico (0)
+            rs = partes_mem[1]  # El registro base ('$0')
+
+            # Leemos físicamente los valores
             op1_val = self.cpu.unidad_proceso.banco_registros.leer(rs)
             op2_val = self.cpu.unidad_proceso.banco_registros.leer(rt)
 
@@ -213,26 +236,26 @@ class Segmentacion:
                 # Al saltar, lo que hay en IF_ID (instrucción siguiente) no sirve, hay que vaciarlo
                 self.IF_ID.inst = "NOP"
 
-            # 4. Guardar todo en el registro de salida ID_EX para el siguiente ciclo
-            self.ID_EX.inst = inst_str
-            self.ID_EX.pc = pc_actual
-            self.ID_EX.op1 = op1_val
-            self.ID_EX.op2 = op2_val
-            self.ID_EX.inmediato = inmediato
-            self.ID_EX.rs = rs
-            self.ID_EX.rt = rt
-            self.ID_EX.rd = rd
+        # 4. Guardar todo en el registro de salida ID_EX para el siguiente ciclo
+        self.ID_EX.inst = inst_str
+        self.ID_EX.pc = pc_actual
+        self.ID_EX.op1 = op1_val
+        self.ID_EX.op2 = op2_val
+        self.ID_EX.inmediato = inmediato
+        self.ID_EX.rs = rs
+        self.ID_EX.rt = rt
+        self.ID_EX.rd = rd
 
-            # "Fotografiamos" las señales de control para que viajen con la instrucción
-            self.ID_EX.senales_control = {
-                "alu_src": self.cpu.unidad_control.alu_src,
-                "alu_op": self.cpu.unidad_control.alu_op,
-                "reg_dst": self.cpu.unidad_control.reg_dst,
-                "reg_write": self.cpu.unidad_control.reg_write,
-                "mem_read": self.cpu.unidad_control.mem_read,
-                "mem_write": self.cpu.unidad_control.mem_write,
-                "mem_to_reg": self.cpu.unidad_control.mem_to_reg
-            }
+        # "Fotografiamos" las señales de control para que viajen con la instrucción
+        self.ID_EX.senales_control = {
+            "alu_src": self.cpu.unidad_control.alu_src,
+            "alu_op": self.cpu.unidad_control.alu_op,
+            "reg_dst": self.cpu.unidad_control.reg_dst,
+            "reg_write": self.cpu.unidad_control.reg_write,
+            "mem_read": self.cpu.unidad_control.mem_read,
+            "mem_write": self.cpu.unidad_control.mem_write,
+            "mem_to_reg": self.cpu.unidad_control.mem_to_reg
+        }
 
     # Lee la Memoria de Instrucciones y escribe en IF_ID
     def fase_if(self):
@@ -256,9 +279,11 @@ class Segmentacion:
     def imprimir_estado(self):
         print(f"\n--- Ciclo {self.ciclo_actual} ---")
         # Aquí puedes imprimir qué hay en IF_ID, ID_EX, etc.
+        print(self.IF_ID.inst )
+            
 
-            
-            
+    def imprimir_registros(self):
+        self.cpu.unidad_proceso.banco_registros.imprimir_registros()
             
     #REGISTROS DE ACOPLAMIENTO
             #IF/ID guarda la ultima instruccion y el pc actual

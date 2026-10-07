@@ -1,4 +1,5 @@
 from Componentes.cpu import CPU
+from segmentacion import Segmentacion
 
 
 def main():
@@ -6,9 +7,10 @@ def main():
     procesador = CPU()
 
     #procesador.cargar_instrucciones("Instrucciones.txt")
-    procesador.cargar_instrucciones("ejemploInstruccion.txt")
+    procesador.cargar_instrucciones("Entrada/ejemploInstruccion.txt")
     # procesador.ejecutar_ciclo()
-
+    ejemplo = Segmentacion(procesador)
+    ejemplo.simular()
 
     print("Simulación finalizada.")
     return 0

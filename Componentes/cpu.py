@@ -1,15 +1,13 @@
-from memoria_instrucciones import MemoriaInstrucciones
-from unidad_proceso import UnidadProceso
-from unidad_control import UnidadControl
+from Componentes.memoria_instrucciones import MemoriaInstrucciones
+from Componentes.unidad_proceso import UnidadProceso
+from Componentes.unidad_control import UnidadControl
 
 
 class CPU:
     def __init__(self):
         self.etiquetas = {}
-        self.mem_instrucciones = MemoriaInstrucciones()
         self.unidad_proceso = UnidadProceso()
         self.unidad_control = UnidadControl(self.unidad_proceso)
-        self.pc = 0
 
     def cargar_datos(self, ruta_archivo):
         """
@@ -47,9 +45,6 @@ class CPU:
 
                 # 3. Es una instrucción real
                 else:
-                    self.mem_instrucciones.instrucciones[pc_actual] = linea
+                    self.unidad_proceso.mem_instrucciones.instrucciones[pc_actual] = linea
                     pc_actual += 1
 
-    def ejecutar_ciclo(self):
-        # Lógica para ejecutar un ciclo de reloj recuerda que el reloj es bucle while
-        pass

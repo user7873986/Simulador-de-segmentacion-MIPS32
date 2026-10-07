@@ -1,5 +1,6 @@
-from alu import ALU
+from Componentes.alu import ALU
 from Componentes.banco_registros import BancoRegistros
+from Componentes.memoria_instrucciones import MemoriaInstrucciones
 from Componentes.pc import PC
 from Componentes.memoria_datos import MemoriaDatos
 
@@ -12,7 +13,7 @@ class UnidadProceso:
         self.alu = ALU()
 
         # Memorias
-        self.mem_instrucciones = {}
+        self.mem_instrucciones = MemoriaInstrucciones()
         self.mem_datos = MemoriaDatos()
 
         """# Registros de acoplamiento (para controlar la segmentación/pipeline)
