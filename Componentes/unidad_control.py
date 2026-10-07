@@ -64,6 +64,15 @@ class UnidadControl:
         # Retornamos las partes para que la etapa ID (Decode) extraiga los registros
         return {"opcode": opcode, "args": args}
 
-
+    def resetear_senales(self):
+        self.reg_dst = 0
+        self.pc_src = 0
+        self.branch = 0
+        self.mem_read = 0
+        self.mem_to_reg = 0
+        self.alu_op = 0
+        self.mem_write = 0
+        self.alu_src = 0
+        self.reg_write = 0
 
 #REGISTROS DE ACOPLAMIENTO POR ALGUN LADO DE AQUI
