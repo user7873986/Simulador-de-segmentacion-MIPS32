@@ -22,8 +22,13 @@ class Segmentacion:
 
             # Ejecutamos en orden inverso para no pisar los registros de acoplamiento
             self.fase_wb() #parametros de entrada son el contenido de ex/mem o si el flag de operacion nula. NO devuelve nada
-            self.fase_ex() #aqui tocamos cosas fisicas y la funcion ex guarda algo en el registro de acoplamiento ex/mem, pero no puede hacerlo ahora asiq lo guarda en un ax
             self.fase_mem() #utiliza el ex/mem
+            self.fase_ex() #aqui tocamos cosas fisicas y la funcion ex guarda algo en el registro de acoplamiento ex/mem, pero no puede hacerlo ahora asiq lo guarda en un ax
+
+
+
+
+
             # aqui ya podemos guardar en ex/mem
             self.fase_id()  #devuelve informacion que se guarda en el id
             self.fase_if() #dado el pc devuelve la instruccion que guarda en if/id

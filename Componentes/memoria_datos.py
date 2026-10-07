@@ -1,6 +1,6 @@
 class MemoriaDatos:
     def __init__(self):
-        self.datos = {0: 5} #Solo inicializamos esto aunque haya 2 a la 32 direcciones
+        self.datos = {0: 29} #Solo inicializamos esto aunque haya 2 a la 32 direcciones
 
     def leer(self, direccion):
         if direccion % 4 != 0:

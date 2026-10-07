@@ -27,41 +27,60 @@ class UnidadControl:
         opcode = partes[0].lower()
         args = partes[1:]
 
-        if opcode in ["addi", "add", "sub", "and", "or", "slt", "sll", "andi"]:
-            self.reg_write = 1
-            if opcode in ["addi", "andi"]:
-                self.alu_src = 1
-                self.reg_dst = 0
-            elif opcode == "sll":
-                self.alu_src = 1
-                self.reg_dst = 1
-            else:
-                self.alu_src = 0
-                self.reg_dst = 1
+        operaciones_alu = {
+            "add": "ADD", "addi": "ADD", "lw": "ADD", "sw": "ADD",
+            "sub": "SUB", "beq": "SUB", "bne": "SUB",
+            "and": "AND", "andi": "AND",
+            "or": "OR", "ori": "OR",
+            "slt": "SLT",
+            "sll": "SLL"
+        }
+        self.alu_op = operaciones_alu.get(opcode, "NOP")
 
-            # Pasamos la operación literal a la ALU
-            self.alu_op = opcode.upper()
+        # 2. ENRUTAMIENTO DE SEÑALES DE CONTROL (Multiplexores y Memoria)
+        if opcode in ["add", "sub", "and", "or", "slt"]:
+            # Formato R puro (ej. add $t1, $t2, $t3)
+            self.reg_write = 1
+            self.reg_dst = 1  # Guarda en 'rd'
+            self.alu_src = 0  # Operando 2 es un registro
+            self.mem_to_reg = 0  # El dato viene de la ALU
+
+        elif opcode in ["addi", "andi"]:
+            # Formato I aritmético/lógico (ej. addi $t1, $t2, 100)
+            self.reg_write = 1
+            self.reg_dst = 0  # Guarda en 'rt'
+            self.alu_src = 1  # Operando 2 es el inmediato
+            self.mem_to_reg = 0  # El dato viene de la ALU
+
+        elif opcode == "sll":
+            # Desplazamientos (Shift)
+            self.reg_write = 1
+            self.reg_dst = 1
+            self.alu_src = 1  # El amount (shamt) actúa como inmediato
+            self.mem_to_reg = 0
 
         elif opcode == "lw":
-            self.alu_src = 1
-            self.mem_to_reg = 1
+            # Carga de memoria
             self.reg_write = 1
+            self.reg_dst = 0  # Guarda en 'rt'
+            self.alu_src = 1  # Suma el offset a la dirección
+            self.mem_to_reg = 1  # El dato viene de la Memoria
             self.mem_read = 1
-            self.alu_op = "ADD"  # Suma la dirección base + offset
 
         elif opcode == "sw":
-            self.alu_src = 1
+            # Almacenamiento en memoria
+            self.alu_src = 1  # Suma el offset a la dirección
             self.mem_write = 1
-            self.alu_op = "ADD"  # Suma la dirección base + offset
 
         elif opcode in ["beq", "bne"]:
+            # Saltos condicionales
             self.branch = 1
-            self.alu_op = "SUB"  # Resta para comparar si son iguales
+            # (alu_src = 0 por defecto, compara dos registros)
 
         elif opcode == "j":
+            # Salto incondicional
             self.jump = 1
 
-        # Retornamos las partes para que la etapa ID (Decode) extraiga los registros
         return {"opcode": opcode, "args": args}
 
     def resetear_senales(self):
