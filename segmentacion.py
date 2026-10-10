@@ -128,12 +128,45 @@ class Segmentacion:
 
         senales = self.ID_EX.senales_control
 
+
+        val_rs = self.ID_EX.op1
+        val_rt = self.ID_EX.op2
+
+        #RIEGOS DE TIPO 1 (el dato está a un ciclo)
+        ex_mem_reg_write = self.EX_MEM.senales_control.get("reg_write", 0)
+        ex_mem_rd = self.EX_MEM.reg_dest
+
+        if ex_mem_reg_write == 1 and ex_mem_rd not in ["", "$0", "$zero"]:
+            if ex_mem_rd == self.ID_EX.rs:
+                val_rs = self.EX_MEM.resultado_alu
+            if ex_mem_rd == self.ID_EX.rt:
+                val_rt = self.EX_MEM.resultado_alu
+
+
+        #RIESGOS DE TIPO 2 (el dato está a dos ciclos)
+        mem_wb_reg_write = self.MEM_WB.senales_control.get("reg_write", 0)
+        mem_wb_rd = self.MEM_WB.reg_dest
+
+        # El dato adelantado desde WB depende de si fue un 'lw' o una operación de ALU
+        if self.MEM_WB.senales_control.get("mem_to_reg", 0) == 1:
+            dato_wb = self.MEM_WB.dato_mem
+        else:
+            dato_wb = self.MEM_WB.resultado_alu
+
+        if mem_wb_reg_write == 1 and mem_wb_rd not in ["", "$0", "$zero"]:
+            # Solo adelantamos desde WB si la etapa MEM no ha adelantado ya ese mismo registro (tiene prioridad el más reciente)
+            if mem_wb_rd == self.ID_EX.rs and not (ex_mem_reg_write == 1 and ex_mem_rd == self.ID_EX.rs):
+                val_rs = dato_wb
+            if mem_wb_rd == self.ID_EX.rt and not (ex_mem_reg_write == 1 and ex_mem_rd == self.ID_EX.rt):
+                val_rt = dato_wb
+
         # 2. Simular el Multiplexor ALU_SRC
-        op1 = self.ID_EX.op1
+        op1 = val_rs
+
         if senales["alu_src"] == 1:
             op2 = self.ID_EX.inmediato
         else:
-            op2 = self.ID_EX.op2
+            op2 = val_rt
 
         # 3. Usar el hardware físico (ALU) para el cálculo
         self.cpu.unidad_proceso.alu.entrada1 = op1
@@ -241,7 +274,20 @@ class Segmentacion:
                 # Al saltar, lo que hay en IF_ID (instrucción siguiente) no sirve, hay que vaciarlo
                 self.IF_ID.inst = "NOP"
 
-        # 4. Guardar todo en el registro de salida ID_EX para el siguiente ciclo
+        # 4. DETECCIÓN DE RIESGOS (LOAD-USE)
+        # Miramos si la instrucción anterior (que ahora está en ID_EX) es un 'lw'
+        # y si su destino coincide con nuestro rs o rt.
+        if self.ID_EX.inst not in [None, "NOP"]:
+            ex_mem_read = self.ID_EX.senales_control.get("mem_read", 0)
+            ex_rt = self.ID_EX.rt
+
+            if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
+                # ¡Riesgo detectado! Levantamos bandera, inyectamos NOP y salimos
+                self.hazard_stall = True
+                self.ID_EX.inst = "NOP"
+                return
+
+        # 5. Guardar todo en el registro de salida ID_EX para el siguiente ciclo
         self.ID_EX.inst = inst_str
         self.ID_EX.pc = pc_actual
         self.ID_EX.op1 = op1_val
