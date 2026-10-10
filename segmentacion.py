@@ -124,6 +124,10 @@ class Segmentacion:
         if not inst_str or inst_str == "NOP":
             self.EX_MEM.inst = "NOP"
             self.EX_MEM.pc = pc_actual
+            self.EX_MEM.reg_dest = ""
+            self.EX_MEM.senales_control = {
+                "mem_read": 0, "mem_write": 0, "reg_write": 0, "mem_to_reg": 0
+            }
             return
 
         senales = self.ID_EX.senales_control
@@ -131,6 +135,11 @@ class Segmentacion:
 
         val_rs = self.ID_EX.op1
         val_rt = self.ID_EX.op2
+
+        if self.ID_EX.rs not in ["", "$0", "$zero"]:
+            val_rs = self.cpu.unidad_proceso.banco_registros.leer(self.ID_EX.rs)
+        if self.ID_EX.rt not in ["", "$0", "$zero"]:
+            val_rt = self.cpu.unidad_proceso.banco_registros.leer(self.ID_EX.rt)
 
         #RIEGOS DE TIPO 1 (el dato está a un ciclo)
         ex_mem_reg_write = self.EX_MEM.senales_control.get("reg_write", 0)
@@ -144,8 +153,8 @@ class Segmentacion:
 
 
         #RIESGOS DE TIPO 2 (el dato está a dos ciclos)
-        mem_wb_reg_write = self.MEM_WB.senales_control.get("reg_write", 0)
-        mem_wb_rd = self.MEM_WB.reg_dest
+        #mem_wb_reg_write = self.MEM_WB.senales_control.get("reg_write", 0)
+        #mem_wb_rd = self.MEM_WB.reg_dest
 
         # El dato adelantado desde WB depende de si fue un 'lw' o una operación de ALU
         if self.MEM_WB.senales_control.get("mem_to_reg", 0) == 1:
@@ -153,12 +162,11 @@ class Segmentacion:
         else:
             dato_wb = self.MEM_WB.resultado_alu
 
-        if mem_wb_reg_write == 1 and mem_wb_rd not in ["", "$0", "$zero"]:
-            # Solo adelantamos desde WB si la etapa MEM no ha adelantado ya ese mismo registro (tiene prioridad el más reciente)
-            if mem_wb_rd == self.ID_EX.rs and not (ex_mem_reg_write == 1 and ex_mem_rd == self.ID_EX.rs):
-                val_rs = dato_wb
-            if mem_wb_rd == self.ID_EX.rt and not (ex_mem_reg_write == 1 and ex_mem_rd == self.ID_EX.rt):
-                val_rt = dato_wb
+        if ex_mem_reg_write == 1 and ex_mem_rd not in ["", "$0", "$zero"]:
+            if ex_mem_rd == self.ID_EX.rs:
+                val_rs = self.EX_MEM.resultado_alu
+            if ex_mem_rd == self.ID_EX.rt:
+                val_rt = self.EX_MEM.resultado_alu
 
         # 2. Simular el Multiplexor ALU_SRC
         op1 = val_rs
@@ -210,6 +218,10 @@ class Segmentacion:
         if not inst_str or inst_str == "NOP":
             self.ID_EX.inst = "NOP"
             self.ID_EX.pc = pc_actual
+            self.ID_EX.rs = ""
+            self.ID_EX.rt = ""
+            self.ID_EX.rd = ""
+            self.ID_EX.senales_control = {}
             return
 
         # 2. Usar el hardware de la CPU para decodificar
@@ -282,9 +294,12 @@ class Segmentacion:
             ex_rt = self.ID_EX.rt
 
             if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
-                # ¡Riesgo detectado! Levantamos bandera, inyectamos NOP y salimos
                 self.hazard_stall = True
                 self.ID_EX.inst = "NOP"
+                self.ID_EX.rs = ""
+                self.ID_EX.rt = ""
+                self.ID_EX.rd = ""
+                self.ID_EX.senales_control = {}
                 return
 
         # 5. Guardar todo en el registro de salida ID_EX para el siguiente ciclo
