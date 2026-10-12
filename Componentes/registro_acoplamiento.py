@@ -9,8 +9,10 @@ class RegistroAcoplamiento:
         self.inmediato = 0
         self.resultado_alu = 0
         self.dato_mem = 0
+        self.dato_wb = 0
 
         self.reg_dest = 0 #señal de control
+        self.reg_write = 0
         self.dato_sw = 0
 
         self.rd = ""    # Registro destino para el WB

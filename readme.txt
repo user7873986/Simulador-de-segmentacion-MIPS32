@@ -20,3 +20,5 @@ congelamos la instrucción siguiente varios ciclos.
 
 Para resolver la segunda problemática, trazaremos cables entre distintos componentes asegurándonos que los datos son capaces de viajar al sitio necesario
 antes de ser usados otra vez. Esto se llama Unidad de adelantamiento
+
+Si hay una burbuja, la fase if de la siguiente instrucción a tratar no empieza

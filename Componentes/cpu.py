@@ -1,6 +1,6 @@
 from Componentes.memoria_instrucciones import MemoriaInstrucciones
 from Componentes.unidad_proceso import UnidadProceso
-from Componentes.unidad_control import UnidadControl
+from Componentes.unidad_control  import UnidadControl
 
 
 class CPU:

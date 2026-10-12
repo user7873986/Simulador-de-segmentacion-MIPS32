@@ -1,3 +1,4 @@
+from Componentes.pc import PC
 from Componentes.registro_acoplamiento import RegistroAcoplamiento
 
 
@@ -22,11 +23,8 @@ class Segmentacion:
 
             # Ejecutamos en orden inverso para no pisar los registros de acoplamiento
             self.fase_wb() #parametros de entrada son el contenido de ex/mem o si el flag de operacion nula. NO devuelve nada
-            self.fase_mem() #utiliza el ex/mem
+            self.fase_mem()  # utiliza el ex/mem
             self.fase_ex() #aqui tocamos cosas fisicas y la funcion ex guarda algo en el registro de acoplamiento ex/mem, pero no puede hacerlo ahora asiq lo guarda en un ax
-
-
-
 
 
             # aqui ya podemos guardar en ex/mem
@@ -71,7 +69,12 @@ class Segmentacion:
                 self.cpu.unidad_proceso.banco_registros.escribir(reg_destino, dato_a_escribir)
 
         # 4. Guardar en el registro de salida para contabilizar la instrucción completada
+                # --- LA MAGIA: CONECTAR EL CABLE DE ADELANTAMIENTO ---
+                # Dejamos el dato "vivo" en WB_OUT para que la fase EX lo intercepte este mismo ciclo
         self.WB_OUT.inst = inst_str
+        self.WB_OUT.reg_dest = reg_destino
+        self.WB_OUT.dato_wb = dato_a_escribir
+        self.WB_OUT.reg_write = senales.get("reg_write", 0)
 
     # Usa la información de self.cpu.EX_MEM y escribe en MEM_WB
     def fase_mem(self):
@@ -117,7 +120,6 @@ class Segmentacion:
         }
 
     def fase_ex(self):
-        # 1. Leer el buffer de entrada
         inst_str = self.ID_EX.inst
         pc_actual = self.ID_EX.pc
 
@@ -132,76 +134,58 @@ class Segmentacion:
 
         senales = self.ID_EX.senales_control
 
+        # Limpiamos espacios y basura de los nombres (el fallo más común en Python)
+        rs_limpio = self.ID_EX.rs.strip() if self.ID_EX.rs else ""
+        rt_limpio = self.ID_EX.rt.strip() if self.ID_EX.rt else ""
 
         val_rs = self.ID_EX.op1
         val_rt = self.ID_EX.op2
 
-        if self.ID_EX.rs not in ["", "$0", "$zero"]:
-            val_rs = self.cpu.unidad_proceso.banco_registros.leer(self.ID_EX.rs)
-        if self.ID_EX.rt not in ["", "$0", "$zero"]:
-            val_rt = self.cpu.unidad_proceso.banco_registros.leer(self.ID_EX.rt)
+        # REFRESCO SEGURO DEL BANCO DE REGISTROS
+        if rs_limpio not in ["", "$0", "$zero"]:
+            val_rs = self.cpu.unidad_proceso.banco_registros.leer(rs_limpio)
+        if rt_limpio not in ["", "$0", "$zero"]:
+            val_rt = self.cpu.unidad_proceso.banco_registros.leer(rt_limpio)
 
-        #RIEGOS DE TIPO 1 (el dato está a un ciclo)
+        # FORWARDING TIPO 1: EX/MEM
         ex_mem_reg_write = self.EX_MEM.senales_control.get("reg_write", 0)
-        ex_mem_rd = self.EX_MEM.reg_dest
+        ex_mem_rd = self.EX_MEM.reg_dest.strip() if self.EX_MEM.reg_dest else ""
 
         if ex_mem_reg_write == 1 and ex_mem_rd not in ["", "$0", "$zero"]:
-            if ex_mem_rd == self.ID_EX.rs:
+            if ex_mem_rd == rs_limpio:
                 val_rs = self.EX_MEM.resultado_alu
-            if ex_mem_rd == self.ID_EX.rt:
+            if ex_mem_rd == rt_limpio:
                 val_rt = self.EX_MEM.resultado_alu
 
+        # --- CHIVATO PARA LA CONSOLA ---
+        # Esto te imprimirá exactamente qué ve la ALU antes de operar
+        print(f"[DEBUG ALU] {inst_str:^18} | rs({rs_limpio})={val_rs} | rt({rt_limpio})={val_rt}")
+        # -------------------------------
 
-        #RIESGOS DE TIPO 2 (el dato está a dos ciclos)
-        #mem_wb_reg_write = self.MEM_WB.senales_control.get("reg_write", 0)
-        #mem_wb_rd = self.MEM_WB.reg_dest
-
-        # El dato adelantado desde WB depende de si fue un 'lw' o una operación de ALU
-        if self.MEM_WB.senales_control.get("mem_to_reg", 0) == 1:
-            dato_wb = self.MEM_WB.dato_mem
-        else:
-            dato_wb = self.MEM_WB.resultado_alu
-
-        if ex_mem_reg_write == 1 and ex_mem_rd not in ["", "$0", "$zero"]:
-            if ex_mem_rd == self.ID_EX.rs:
-                val_rs = self.EX_MEM.resultado_alu
-            if ex_mem_rd == self.ID_EX.rt:
-                val_rt = self.EX_MEM.resultado_alu
-
-        # 2. Simular el Multiplexor ALU_SRC
+        # EJECUCIÓN
         op1 = val_rs
-
         if senales["alu_src"] == 1:
             op2 = self.ID_EX.inmediato
         else:
             op2 = val_rt
 
-        # 3. Usar el hardware físico (ALU) para el cálculo
         self.cpu.unidad_proceso.alu.entrada1 = op1
         self.cpu.unidad_proceso.alu.entrada2 = op2
         self.cpu.unidad_proceso.alu.ejecutar(senales["alu_op"])
-
         resultado = self.cpu.unidad_proceso.alu.resultado
 
-        # 4. Simular el Multiplexor REG_DST
-        # Si es formato R (ej. add), va a rd. Si es formato I (ej. lw, addi), va a rt.
+        # MULTIPLEXOR DESTINO
         if senales["reg_dst"] == 1:
-            reg_destino = self.ID_EX.rd
+            reg_destino = self.ID_EX.rd.strip() if self.ID_EX.rd else ""
         else:
-            reg_destino = self.ID_EX.rt
+            reg_destino = rt_limpio
 
-        # 5. Guardar todo en la cinta transportadora de salida (EX_MEM)
+        # GUARDAR EN EX_MEM
         self.EX_MEM.inst = inst_str
         self.EX_MEM.pc = pc_actual
         self.EX_MEM.resultado_alu = resultado
-
-        # En una instrucción 'sw', necesitamos el valor original leído del registro origen
-        # para guardarlo en memoria. Lo arrastramos aquí.
-        self.EX_MEM.dato_sw = self.ID_EX.op2
-
+        self.EX_MEM.dato_sw = val_rt
         self.EX_MEM.reg_dest = reg_destino
-
-        # Pasamos a la siguiente fase solo las señales de control que aún hacen falta
         self.EX_MEM.senales_control = {
             "mem_read": senales["mem_read"],
             "mem_write": senales["mem_write"],
@@ -271,7 +255,7 @@ class Segmentacion:
             op1_val = self.cpu.unidad_proceso.banco_registros.leer(rs)
             op2_val = self.cpu.unidad_proceso.banco_registros.leer(rt)
 
-        elif opcode == "beq":
+        elif opcode == "bne":
             # SALTO RESUELTO EN ID
             rs = args[0]
             rt = args[1]
@@ -280,11 +264,20 @@ class Segmentacion:
             val1 = self.cpu.unidad_proceso.banco_registros.leer(rs)
             val2 = self.cpu.unidad_proceso.banco_registros.leer(rt)
 
-            if val1 == val2:
+            if val1 != val2:
                 # Modificamos directamente el PC de la máquina física
-                self.cpu.unidad_proceso.pc.contador = self.cpu.etiquetas.get(etiqueta, 0)
+                self.cpu.unidad_proceso.pc.set_pc(self.cpu.etiquetas.get(etiqueta, 0))
                 # Al saltar, lo que hay en IF_ID (instrucción siguiente) no sirve, hay que vaciarlo
-                self.IF_ID.inst = "NOP"
+                self.branch_flush()
+                return
+
+        elif opcode == "j":
+            etiqueta = args[0]
+
+            self.cpu.unidad_proceso.pc.set_pc(self.cpu.etiquetas.get(etiqueta, 0))
+
+            self.branch_flush()
+            return
 
         # 4. DETECCIÓN DE RIESGOS (LOAD-USE)
         # Miramos si la instrucción anterior (que ahora está en ID_EX) es un 'lw'
@@ -295,11 +288,7 @@ class Segmentacion:
 
             if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
                 self.hazard_stall = True
-                self.ID_EX.inst = "NOP"
-                self.ID_EX.rs = ""
-                self.ID_EX.rt = ""
-                self.ID_EX.rd = ""
-                self.ID_EX.senales_control = {}
+                self.branch_flush()
                 return
 
         # 5. Guardar todo en el registro de salida ID_EX para el siguiente ciclo
@@ -325,6 +314,15 @@ class Segmentacion:
 
     # Lee la Memoria de Instrucciones y escribe en IF_ID
     def fase_if(self):
+
+        if getattr(self, "hazard_stall", False) == True:
+            # Apagamos la bandera para que en el próximo ciclo el 'add' intente
+            # pasar de nuevo (esta vez el 'lw' ya estará lejos y no habrá riesgo).
+            self.hazard_stall = False
+
+            # Imprimimos esto para ver la congelación en la consola
+            print(f"      [!] FASE IF CONGELADA: PC se mantiene en {self.cpu.unidad_proceso.pc.contador}")
+            return  # Cortamos aquí. Ni avanzamos el PC, ni leemos memoria, ni sobrescribimos IF_ID.
         # 1. Leer el valor actual del Program Counter (PC) físico
         pc_actual = self.cpu.unidad_proceso.pc.contador
 
@@ -350,7 +348,15 @@ class Segmentacion:
 
     def imprimir_registros(self):
         self.cpu.unidad_proceso.banco_registros.imprimir_registros()
-            
+
+    def branch_flush(self):
+        self.ID_EX.inst = "NOP"
+        self.ID_EX.rs = ""
+        self.ID_EX.rt = ""
+        self.ID_EX.rd = ""
+        self.ID_EX.senales_control = {}
+
+
     #REGISTROS DE ACOPLAMIENTO
             #IF/ID guarda la ultima instruccion y el pc actual
             
