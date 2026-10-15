@@ -33,8 +33,6 @@ class Segmentacion:
 
             self.imprimir_estado()
 
-            self.imprimir_registros()
-
             if (self.IF_ID.inst in [None, "NOP"] and
                     self.ID_EX.inst in [None, "NOP"] and
                     self.EX_MEM.inst in [None, "NOP"] and
@@ -85,6 +83,11 @@ class Segmentacion:
         if not inst_str or inst_str == "NOP":
             self.MEM_WB.inst = "NOP"
             self.MEM_WB.pc = pc_actual
+            self.MEM_WB.reg_dest = ""
+            self.MEM_WB.senales_control = {
+                "reg_write": 0,
+                "mem_to_reg": 0
+            }
             return
 
         senales = self.EX_MEM.senales_control
@@ -257,24 +260,56 @@ class Segmentacion:
 
         elif opcode == "bne":
             # SALTO RESUELTO EN ID
-            rs = args[0]
-            rt = args[1]
-            etiqueta = args[2]
+            rs = args[0].strip()
+            rt = args[1].strip()
+            etiqueta = args[2].strip()
+
+            # --- RADAR DE RIESGOS PARA SALTOS (Branch Interlock) ---
+            # 1. Riesgo en EX (ID_EX)
+            id_ex_reg_write = self.ID_EX.senales_control.get("reg_write", 0)
+            id_ex_dest = self.ID_EX.rd if self.ID_EX.senales_control.get("reg_dst", 0) == 1 else self.ID_EX.rt
+            id_ex_dest = id_ex_dest.strip() if id_ex_dest else ""
+            riesgo_ex = id_ex_reg_write == 1 and id_ex_dest in [rs, rt] and id_ex_dest not in ["", "$0", "$zero"]
+
+            # 2. Riesgo en MEM (EX_MEM)
+            ex_mem_reg_write = self.EX_MEM.senales_control.get("reg_write", 0)
+            ex_mem_dest = self.EX_MEM.reg_dest.strip() if self.EX_MEM.reg_dest else ""
+            riesgo_mem = ex_mem_reg_write == 1 and ex_mem_dest in [rs, rt] and ex_mem_dest not in ["", "$0", "$zero"]
+
+            # 3. ¡NUEVO! Riesgo en WB (MEM_WB) -> El escondite de Python
+            mem_wb_reg_write = self.MEM_WB.senales_control.get("reg_write", 0)
+            mem_wb_dest = self.MEM_WB.reg_dest.strip() if self.MEM_WB.reg_dest else ""
+            riesgo_wb = mem_wb_reg_write == 1 and mem_wb_dest in [rs, rt] and mem_wb_dest not in ["", "$0", "$zero"]
+
+            # Si alguna de las TRES instrucciones anteriores va a modificar lo que queremos leer, ESPERAMOS.
+            if riesgo_ex or riesgo_mem or riesgo_wb:
+                self.hazard_stall = True
+                self.mensaje_stall = "STALL(branch-hazard)"
+                self.branch_flush()
+                return
 
             val1 = self.cpu.unidad_proceso.banco_registros.leer(rs)
             val2 = self.cpu.unidad_proceso.banco_registros.leer(rt)
 
             if val1 != val2:
                 # Modificamos directamente el PC de la máquina física
+                nuevo_pc = self.cpu.etiquetas.get(etiqueta, 0)
                 self.cpu.unidad_proceso.pc.set_pc(self.cpu.etiquetas.get(etiqueta, 0))
+                self.mensaje_salto = f"    [salto resuelto en ID: condición CUMPLIDA -> objetivo PC {nuevo_pc}]"
                 # Al saltar, lo que hay en IF_ID (instrucción siguiente) no sirve, hay que vaciarlo
-                self.branch_flush()
-                return
+                self.IF_ID.inst = "NOP"
+            else:
+                self.mensaje_salto = f"    [salto resuelto en ID: condición FALLIDA -> no salta]"
+
+            self.branch_flush()
+            return
+
 
         elif opcode == "j":
             etiqueta = args[0]
-
+            nuevo_pc = self.cpu.etiquetas.get(etiqueta, 0)
             self.cpu.unidad_proceso.pc.set_pc(self.cpu.etiquetas.get(etiqueta, 0))
+            self.mensaje_salto = f"    [salto resuelto en ID: incondicional -> objetivo PC {nuevo_pc}]"
 
             self.branch_flush()
             return
@@ -288,6 +323,7 @@ class Segmentacion:
 
             if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
                 self.hazard_stall = True
+                self.mensaje_stall = "STALL(load-use)"
                 self.branch_flush()
                 return
 
@@ -319,10 +355,8 @@ class Segmentacion:
             # Apagamos la bandera para que en el próximo ciclo el 'add' intente
             # pasar de nuevo (esta vez el 'lw' ya estará lejos y no habrá riesgo).
             self.hazard_stall = False
-
-            # Imprimimos esto para ver la congelación en la consola
-            print(f"      [!] FASE IF CONGELADA: PC se mantiene en {self.cpu.unidad_proceso.pc.contador}")
             return  # Cortamos aquí. Ni avanzamos el PC, ni leemos memoria, ni sobrescribimos IF_ID.
+
         # 1. Leer el valor actual del Program Counter (PC) físico
         pc_actual = self.cpu.unidad_proceso.pc.contador
 
@@ -340,11 +374,6 @@ class Segmentacion:
         if inst_str != "NOP":
             self.cpu.unidad_proceso.pc.contador += 1
 
-    def imprimir_estado(self):
-        print(f"\n--- Ciclo {self.ciclo_actual} ---")
-        # Aquí puedes imprimir qué hay en IF_ID, ID_EX, etc.
-        print(self.IF_ID.inst )
-            
 
     def imprimir_registros(self):
         self.cpu.unidad_proceso.banco_registros.imprimir_registros()
@@ -356,6 +385,57 @@ class Segmentacion:
         self.ID_EX.rd = ""
         self.ID_EX.senales_control = {}
 
+    def imprimir_estado(self):
+        # 1. Comprobar si hubo algún aviso de atasco en este ciclo
+        stall_str = ""
+        if getattr(self, "mensaje_stall", "") != "":
+            stall_str = f"  STALL({self.mensaje_stall})"
+            self.mensaje_stall = ""  # Lo consumimos y lo limpiamos
+
+        # Cabecera del ciclo
+        print(f"\nCiclo {self.ciclo_actual:02d}{stall_str}")
+
+        # 2. Formatear la Traza del Cauce (Pipeline Trace)
+        # Convertimos los "NOP", "None" o vacíos en "--" para mayor limpieza visual
+        def formato(inst):
+            return inst if inst and inst != "NOP" else "--"
+
+        _if = formato(self.IF_ID.inst)
+        _id = formato(self.ID_EX.inst)
+        _ex = formato(self.EX_MEM.inst)
+        _mem = formato(self.MEM_WB.inst)
+        _wb = formato(self.WB_OUT.inst)
+
+        # Imprimimos de forma compacta sin el padding de espacios
+        print(f"IF: {_if} | ID: {_id} | EX: {_ex} | MEM: {_mem} | WB: {_wb}")
+
+        # 3. Comprobar si hubo resolución de saltos
+        if getattr(self, "mensaje_salto", "") != "":
+            print(self.mensaje_salto)
+            self.mensaje_salto = ""  # Lo consumimos
+
+        # 4. Imprimir el Hardware de la máquina
+        print("-" * 75)
+        # Banco de Registros
+        self.cpu.unidad_proceso.banco_registros.imprimir_registros()
+
+        # Memoria de Datos
+        mem_datos = getattr(self.cpu.unidad_proceso.mem_datos, 'memoria', {})
+        elementos_memoria = [f"Dir[{k}]: {v}" for k, v in mem_datos.items() if v != 0]
+        if elementos_memoria:
+            print(f"MEMORIA:   " + " | ".join(elementos_memoria))
+        else:
+            print("MEMORIA:   (vacía/ceros)")
+
+        # Etiquetas
+        etiquetas = self.cpu.etiquetas
+        if etiquetas:
+            str_etiquetas = " | ".join([f"{nombre}: PC {valor}" for nombre, valor in etiquetas.items()])
+            print(f"ETIQUETAS: {str_etiquetas}")
+        else:
+            print("ETIQUETAS: (ninguna)")
+
+        print("-" * 75)
 
     #REGISTROS DE ACOPLAMIENTO
             #IF/ID guarda la ultima instruccion y el pc actual
