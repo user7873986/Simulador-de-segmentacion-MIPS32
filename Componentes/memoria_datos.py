@@ -5,8 +5,6 @@ class MemoriaDatos:
     def leer(self, direccion):
         if direccion % 4 != 0:
             raise ValueError(f"Excepción de Hardware: La dirección {direccion} no es múltiplo de 4.")
-
-        # Si la direccion esta vacia devuelve 0
         return self.datos.get(direccion, 0)
 
     def escribir(self, direccion, valor):
@@ -15,3 +13,10 @@ class MemoriaDatos:
 
         # Crea o sobreescribe
         self.datos[direccion] = valor
+
+    #Como tal esto no lo debería de tener un HW pero por términos de POO lo hago aquí
+    def imprimir_memoria(self):
+        print("--- MEMORIA ---")
+        for direccion, valor in self.datos.items():
+            print(f" Direccion {direccion}: Valor : {valor}")
+        print("")

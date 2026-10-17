@@ -17,25 +17,23 @@ class BancoRegistros:
         }
 
     def leer(self, reg_str):
-        # Devuelve el valor del registro o 0 si nos pasan un string inválido
-        return self.registros.get(reg_str, 0)
+        if self.registros.get(reg_str) == None:
+            raise ValueError(f"Excepción de Hardware: El banco de registros no contiene el registro {reg_str}")
+        else:
+            return self.registros[reg_str]
 
     def escribir(self, reg_str, valor):
-        # Regla de oro de MIPS: $0 y $zero están cableados a tierra y son inmutables
         if reg_str not in ["$0", "$zero"] and reg_str in self.registros:
             self.registros[reg_str] = valor
 
     def imprimir_registros(self):
         print("\n--- BANCO DE REGISTROS ---")
-
-        # Filtramos para imprimir solo los registros que han sido modificados (distintos de 0)
         registros_modificados = {reg: val for reg, val in self.registros.items() if val != 0}
 
         if not registros_modificados:
             print("  (Todos los registros están a 0)")
         else:
             for reg, val in registros_modificados.items():
-                # Formateamos para que quede alineado (ej. $t1 : 105)
-                print(f"  {reg:<5} : {val}")
+                print(f"  {reg} : {val}")
 
         print("-" * 26)

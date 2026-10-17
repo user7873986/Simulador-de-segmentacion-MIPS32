@@ -1,27 +1,21 @@
 class UnidadControl:
-    def __init__(self, unidad_procesamiento):
-
-        self.unidad_procesamiento = unidad_procesamiento
-        
-        # Aquí irán las señales de control: RegDst, Branch, MemRead, etc.
-        self.reg_dst = 0
-        self.pc_src = 0
-        self.branch = 0
-        self.mem_read = 0
-        self.mem_to_reg = 0
-        self.alu_op = 0
-        self.mem_write = 0
-        self.alu_src = 0
-        self.reg_write = 0
-
-    def decodificar(self, instruccion_str):
-
+    def __init__(self):
+        # Señales de control: RegDst, Branch, MemRead, etc.
         self.resetear_senales()
 
-        if not instruccion_str or instruccion_str == "NOP":
-            return {"opcode": "NOP", "args": []}
 
-        # Limpiamos comas y separamos por espacios
+    def decodificar(self, instruccion_str):
+        self.resetear_senales()
+
+        # Respuesta por defecto para burbujas
+        resultado_vacio = {
+            "opcode": "NOP", "rs": "", "rt": "", "rd": "",
+            "inmediato": 0, "etiqueta": "", "senales": {}
+        }
+
+        if not instruccion_str or instruccion_str == "NOP":
+            return resultado_vacio
+
         # 'addi $s0, $0, 1' -> partes = ['addi', '$s0', '$0', '1']
         partes = instruccion_str.replace(',', '').split()
         opcode = partes[0].lower()
@@ -37,51 +31,97 @@ class UnidadControl:
         }
         self.alu_op = operaciones_alu.get(opcode, "NOP")
 
-        # 2. ENRUTAMIENTO DE SEÑALES DE CONTROL (Multiplexores y Memoria)
+        rs, rt, rd, etiqueta = "", "", "", ""
+        inmediato = 0
+
+        # FORMATO R
         if opcode in ["add", "sub", "and", "or", "slt"]:
-            # Formato R puro (ej. add $t1, $t2, $t3)
-            self.reg_write = 1
-            self.reg_dst = 1  # Guarda en 'rd'
-            self.alu_src = 0  # Operando 2 es un registro
-            self.mem_to_reg = 0  # El dato viene de la ALU
-
-        elif opcode in ["addi", "andi"]:
-            # Formato I aritmético/lógico (ej. addi $t1, $t2, 100)
-            self.reg_write = 1
-            self.reg_dst = 0  # Guarda en 'rt'
-            self.alu_src = 1  # Operando 2 es el inmediato
-            self.mem_to_reg = 0  # El dato viene de la ALU
-
-        elif opcode == "sll":
-            # Desplazamientos (Shift)
             self.reg_write = 1
             self.reg_dst = 1
-            self.alu_src = 1  # El amount (shamt) actúa como inmediato
+            self.alu_src = 0
             self.mem_to_reg = 0
 
-        elif opcode == "lw":
-            # Carga de memoria
+            rd = args[0].strip()
+            rs = args[1].strip()
+            rt = args[2].strip()
+
+        # FORMATO I (Aritmético)
+        elif opcode in ["addi", "andi"]:
             self.reg_write = 1
-            self.reg_dst = 0  # Guarda en 'rt'
-            self.alu_src = 1  # Suma el offset a la dirección
-            self.mem_to_reg = 1  # El dato viene de la Memoria
-            self.mem_read = 1
+            self.reg_dst = 0
+            self.alu_src = 1
+            self.mem_to_reg = 0
 
-        elif opcode == "sw":
-            # Almacenamiento en memoria
-            self.alu_src = 1  # Suma el offset a la dirección
-            self.mem_write = 1
+            rt = args[0].strip()
+            rs = args[1].strip()
+            inmediato = int(args[2].strip())
 
+        # FORMATO DESPLAZAMIENTOS
+        elif opcode == "sll":
+            self.reg_write = 1
+            self.reg_dst = 1
+            self.alu_src = 1
+            self.mem_to_reg = 0
+
+            rd = args[0].strip()
+            rt = args[1].strip()
+            inmediato = int(args[2].strip())
+
+        # FORMATO MEMORIA
+        elif opcode in ["lw", "sw"]:
+            # El enrutamiento es idéntico para ambos
+            rt = args[0].strip()
+            partes_mem = args[1].replace(')', '').split('(')
+            inmediato = int(partes_mem[0].strip())
+            rs = partes_mem[1].strip()
+
+            self.alu_src = 1
+            if opcode == "lw":
+                self.reg_write = 1
+                self.reg_dst = 0
+                self.mem_to_reg = 1
+                self.mem_read = 1
+            else:  # sw
+                self.mem_write = 1
+
+        # FORMATO SALTOS CONDICIONALES
         elif opcode in ["beq", "bne"]:
-            # Saltos condicionales
             self.branch = 1
-            # (alu_src = 0 por defecto, compara dos registros)
 
+            rs = args[0].strip()
+            rt = args[1].strip()
+            etiqueta = args[2].strip()
+
+        # FORMATO SALTO INCONDICIONAL
         elif opcode == "j":
-            # Salto incondicional
             self.jump = 1
+            etiqueta = args[0].strip()
 
-        return {"opcode": opcode, "args": args}
+        # ----------------------------------------
+
+        # EMPAQUETADO FINAL
+        senales_control = {
+            "alu_src": self.alu_src,
+            "alu_op": self.alu_op,
+            "reg_dst": self.reg_dst,
+            "reg_write": self.reg_write,
+            "mem_read": self.mem_read,
+            "mem_write": self.mem_write,
+            "mem_to_reg": self.mem_to_reg,
+            "branch": self.branch,
+            "jump": self.jump
+        }
+
+        return {
+            "opcode": opcode,
+            "rs": rs,
+            "rt": rt,
+            "rd": rd,
+            "inmediato": inmediato,
+            "etiqueta": etiqueta,
+            "senales": senales_control
+        }
+
 
     def resetear_senales(self):
         self.reg_dst = 0
@@ -89,9 +129,8 @@ class UnidadControl:
         self.branch = 0
         self.mem_read = 0
         self.mem_to_reg = 0
-        self.alu_op = 0
+        self.alu_op = "NOP"
         self.mem_write = 0
         self.alu_src = 0
         self.reg_write = 0
-
-#REGISTROS DE ACOPLAMIENTO POR ALGUN LADO DE AQUI
+        self.jump = 0

@@ -1,5 +1,4 @@
 class RegistroAcoplamiento:
-    """Estructura de estado para los registros intermedios del cauce."""
     def __init__(self):
         self.senales_control = {}
         self.inst = None      # Objeto Instruccion o string

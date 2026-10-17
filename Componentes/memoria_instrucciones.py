@@ -5,5 +5,4 @@ class MemoriaInstrucciones:
         self.instrucciones = {}
 
     def leer(self, pc):
-        #
         return self.instrucciones.get(pc, "")

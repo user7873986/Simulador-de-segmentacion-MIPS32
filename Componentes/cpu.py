@@ -7,21 +7,10 @@ class CPU:
     def __init__(self):
         self.etiquetas = {}
         self.unidad_proceso = UnidadProceso()
-        self.unidad_control = UnidadControl(self.unidad_proceso)
+        self.unidad_control = UnidadControl()
 
     def cargar_datos(self, ruta_archivo):
-        """
-        Lee el fichero de datos e instrucciones y
-        puebla la mem_instrucciones y mem_datos.
-        """
-        try:
-            with open(ruta_archivo, 'r') as archivo:
-                # Aquí iría la lógica de lectura y parseo
-                pass
-            print(f"Datos cargados correctamente desde {ruta_archivo}")
-        except FileNotFoundError:
-            print(f"Error: No se encontró el archivo {ruta_archivo}")
-
+        pass
 
     def cargar_instrucciones(self, ruta_instrucciones):
         pc_actual = 0
