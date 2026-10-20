@@ -1,5 +1,6 @@
 from Componentes.alu import ALU
 from Componentes.banco_registros import BancoRegistros
+from Componentes.forwarding_unit import ForwardingUnit
 from Componentes.memoria_instrucciones import MemoriaInstrucciones
 from Componentes.pc import PC
 from Componentes.memoria_datos import MemoriaDatos
@@ -10,6 +11,7 @@ class UnidadProceso:
         self.pc = PC()
         self.banco_registros = BancoRegistros()
         self.alu = ALU()
+        self.unidad_forwarding = ForwardingUnit()
 
         self.mem_instrucciones = MemoriaInstrucciones()
         self.mem_datos = MemoriaDatos()

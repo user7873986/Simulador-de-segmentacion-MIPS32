@@ -2,7 +2,7 @@ Simulación de segmentación
 
 estructuras de datos ->
 
-el reloj va a ser un bucle while
+el reloj va a ser un bucle while, cada ejecución del bucle es un ciclo de reloj
 
 fichero de texto que incluye las instrucciones de nuestro programa
 

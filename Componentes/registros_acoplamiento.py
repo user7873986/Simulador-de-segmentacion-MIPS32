@@ -1,7 +1,7 @@
 
 class RegistroAcoplamiento:
     def __init__(self):
-        self.senales_control = {}
+        self.senales = {}
         self.inst = ""
         self.pc = 0
         self.op1 = 0
