@@ -52,6 +52,7 @@ class Segmentacion:
         pc = self.cpu.unidad_proceso.IF_ID.pc
 
         decodificado = self.cpu.unidad_control.decodificar(inst)
+
         if not inst or inst == "NOP":
             self.burbuja_id()
             return
@@ -122,12 +123,7 @@ class Segmentacion:
         pc = self.cpu.unidad_proceso.ID_EX.pc
 
         if not inst or inst == "NOP":
-            self.cpu.unidad_proceso.EX_MEM.inst = "NOP"
-            self.cpu.unidad_proceso.EX_MEM.pc = pc
-            self.cpu.unidad_proceso.EX_MEM.reg_dest = ""
-            self.cpu.unidad_proceso.EX_MEM.senales = {
-                "mem_read": 0, "mem_write": 0, "reg_write": 0, "mem_to_reg": 0
-            }
+            self.burbuja_ex(pc)
             return
 
         senales = self.cpu.unidad_proceso.ID_EX.senales #solo las necesarias
@@ -142,7 +138,7 @@ class Segmentacion:
         ex_mem_rd = self.cpu.unidad_proceso.EX_MEM.reg_dest
         resultado_alu = self.cpu.unidad_proceso.EX_MEM.resultado_alu
 
-        val_rs,val_rt = self.cpu.unidad_proceso.unidad_forwarding.adelantar(ex_mem_reg_write,rs,rt,resultado_alu,val_rs,val_rt)
+        val_rs,val_rt = self.cpu.unidad_proceso.unidad_forwarding.adelantar(ex_mem_reg_write,ex_mem_rd,rs,rt ,resultado_alu,val_rs,val_rt)
 
         op1 = val_rs
         if senales["alu_src"] == 1:
@@ -264,18 +260,17 @@ class Segmentacion:
 
         if not necesarios:
             return False
-        up = self.cpu.unidad_proceso
 
-        if up.ID_EX.senales.get("reg_write") == 1:
-            reg_dst = up.ID_EX.senales.get("reg_dst")
-            destino = up.ID_EX.rd if reg_dst == 1 else up.ID_EX.rt
+        if self.cpu.unidad_proceso.ID_EX.senales.get("reg_write") == 1:
+            reg_dst = self.cpu.unidad_proceso.ID_EX.senales.get("reg_dst")
+            destino = self.cpu.unidad_proceso.ID_EX.rd if reg_dst == 1 else self.cpu.unidad_proceso.ID_EX.rt
             if destino in necesarios:
                 return True
 
-        if up.EX_MEM.senales.get("reg_write") == 1 and up.EX_MEM.reg_dest in necesarios:
+        if self.cpu.unidad_proceso.EX_MEM.senales.get("reg_write") == 1 and self.cpu.unidad_proceso.EX_MEM.reg_dest in necesarios:
             return True
 
-        if up.MEM_WB.senales.get("reg_write") == 1 and up.MEM_WB.reg_dest in necesarios:
+        if self.cpu.unidad_proceso.MEM_WB.senales.get("reg_write") == 1 and self.cpu.unidad_proceso.MEM_WB.reg_dest in necesarios:
             return True
 
         return False
@@ -288,6 +283,7 @@ class Segmentacion:
             self.mensaje_burbuja = ""
 
         print(f"\nCiclo {self.ciclo_actual:02d}{stall_str}")
+
 
         _if = self.cpu.unidad_proceso.IF_ID.inst if self.cpu.unidad_proceso.IF_ID.inst != "NOP" else "--"
         _id = self.cpu.unidad_proceso.ID_EX.inst if self.cpu.unidad_proceso.ID_EX.inst != "NOP" else "--"

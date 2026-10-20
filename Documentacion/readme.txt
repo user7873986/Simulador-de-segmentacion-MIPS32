@@ -1,21 +1,21 @@
 Simulación de segmentación
 
-estructuras de datos ->
+estructuras de datos -> diccionarios para las memorias tanto de instrucción como de datos
+la unidad de control utiliza también un diccionario para controlar sus señales
+los registros de acoplamiento utilizan solo las señales y atributos que necesitan saber las fases que se usan
 
 el reloj va a ser un bucle while, cada ejecución del bucle es un ciclo de reloj
 
-fichero de texto que incluye las instrucciones de nuestro programa
 
 explicarlo empezando por lo mas global a lo especifico. Primero con un diagrama de clases . EXplicar luego elementos relevantes mediante capturas de codigo y luego explicar la salida
 
-etiquetas, 15 instrucciones al menos, meter riesgos de datos RAWs solo, 1 o 2
-
-
 DECISIONES DE DISEÑO
-El pc se suma de uno en uno; Mientras que las direcciones van de 4 en 4
+El pc se suma de uno en uno; Mientras que las direcciones en memoria van de 4 en 4
+se ha implementado una clase llamada forwarding que evalúa si se necesita hacer y adelanta el dato
+
 
 RIESGOS DE DATOS
-Entre los riesgos de datos RAW distinguimos dos tipos; LOAD-USE y RAW entre aritméticas.
+Entre los riesgos de datos RAW distinguimos dos tipos; LOAD-USE  y RAW entre aritméticas.
 El riesgo LOAD-USE se da cuando una instrucción lw precede a una aritmética que necesita el dato que recupera de memoria lw, para solucionar este problema
 congelamos la instrucción siguiente varios ciclos.
 
@@ -26,7 +26,6 @@ Si hay una burbuja, la fase if de la siguiente instrucción a tratar no empieza
 
 FORWARDING
 ifs de los registros origen igualando al de destino y luego el valor del registro de origen lo igualas al resultado final con ambos registros origen el 1 y el 2
-
 Si hay un registro que no se reconoce se planta un 0
 
 RIESGOS DE CONTROL
@@ -34,8 +33,6 @@ RIESGOS DE CONTROL
 
 HAY QUE HACER DIAGRAMAS DE CÓMO LA INFORMACIÓN PASA DE UN REGISTRO A OTRO
 
-
-UNIDADES DE ADELANTAMIENTO
 Están en la fase_Ex, conectan a la alu si hay que meter un dato antes que otro
 
 UNIDAD DE DETECCIÓN DE RIESGOS
