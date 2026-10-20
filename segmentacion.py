@@ -53,7 +53,7 @@ class Segmentacion:
 
         decodificado = self.cpu.unidad_control.decodificar(inst)
         if not inst or inst == "NOP":
-            self.inyectar_burbuja()
+            self.burbuja_id()
             return
 
         rs = decodificado["rs"]
@@ -68,22 +68,7 @@ class Segmentacion:
         if opcode == "bne":
             etiqueta = decodificado["etiqueta"]
 
-            # OJO TODDO ESTE BLOQUE
-            id_ex_reg_write = self.cpu.unidad_proceso.ID_EX.senales.get("reg_write", 0)
-            id_ex_dest = self.cpu.unidad_proceso.ID_EX.rd if self.cpu.unidad_proceso.ID_EX.senales.get(
-                "reg_dst", 0) == 1 else self.cpu.unidad_proceso.ID_EX.rt
-            id_ex_dest = id_ex_dest.strip() if id_ex_dest else ""
-            riesgo_ex = id_ex_reg_write == 1 and id_ex_dest in [rs, rt] and id_ex_dest not in ["", "$0", "$zero"]
-
-            ex_mem_reg_write = self.cpu.unidad_proceso.EX_MEM.senales.get("reg_write", 0)
-            ex_mem_dest = self.cpu.unidad_proceso.EX_MEM.reg_dest.strip() if self.cpu.unidad_proceso.EX_MEM.reg_dest else ""
-            riesgo_mem = ex_mem_reg_write == 1 and ex_mem_dest in [rs, rt] and ex_mem_dest not in ["", "$0", "$zero"]
-
-            mem_wb_reg_write = self.cpu.unidad_proceso.MEM_WB.senales.get("reg_write", 0)
-            mem_wb_dest = self.cpu.unidad_proceso.MEM_WB.reg_dest.strip() if self.cpu.unidad_proceso.MEM_WB.reg_dest else ""
-            riesgo_wb = mem_wb_reg_write == 1 and mem_wb_dest in [rs, rt] and mem_wb_dest not in ["", "$0", "$zero"]
-
-            if riesgo_ex or riesgo_mem or riesgo_wb:
+            if self.tiene_riesgo_salto(rs,rt):
                 self.burbuja = True
                 self.mensaje_burbuja = "BURBUJA"
                 self.burbuja_id()
@@ -105,7 +90,7 @@ class Segmentacion:
 
         if opcode == "j":
             etiqueta = decodificado["etiqueta"]
-            nuevo_pc = self.cpu.etiquetas.get(etiqueta, 0)
+            nuevo_pc = self.cpu.etiquetas.get(etiqueta)
             self.cpu.unidad_proceso.pc.set_pc(nuevo_pc)
             self.mensaje_salto = f"[salto incondicional -> nuevo PC {nuevo_pc}]"
             self.burbuja_id()
@@ -113,7 +98,7 @@ class Segmentacion:
 
         #OJO MIRAR AQUI
         if self.cpu.unidad_proceso.ID_EX.inst not in [None, "NOP"]:
-            ex_mem_read = self.cpu.unidad_proceso.ID_EX.senales.get("mem_read", 0)
+            ex_mem_read = self.cpu.unidad_proceso.ID_EX.senales.get("mem_read")
             ex_rt = self.cpu.unidad_proceso.ID_EX.rt
 
             if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
@@ -265,6 +250,37 @@ class Segmentacion:
         self.cpu.unidad_proceso.MEM_WB.reg_dest = ""
         self.cpu.unidad_proceso.MEM_WB.senales = {"reg_write": 0, "mem_to_reg": 0}
 
+    def tiene_riesgo_raw(self,rs,rt):
+        #solo cuando hay un lw antes
+        if self.cpu.unidad_proceso.ID_EX.inst not in [None, "NOP"]:
+            ex_mem_read = self.cpu.unidad_proceso.ID_EX.senales.get("mem_read", 0)
+            ex_rt = self.cpu.unidad_proceso.ID_EX.rt
+            if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
+                return True
+        return False
+
+    def tiene_riesgo_salto(self,rs,rt):
+        necesarios = [reg for reg in (rs, rt) if reg not in ("", "$0", "$zero")]
+
+        if not necesarios:
+            return False
+        up = self.cpu.unidad_proceso
+
+        if up.ID_EX.senales.get("reg_write") == 1:
+            reg_dst = up.ID_EX.senales.get("reg_dst")
+            destino = up.ID_EX.rd if reg_dst == 1 else up.ID_EX.rt
+            if destino in necesarios:
+                return True
+
+        if up.EX_MEM.senales.get("reg_write") == 1 and up.EX_MEM.reg_dest in necesarios:
+            return True
+
+        if up.MEM_WB.senales.get("reg_write") == 1 and up.MEM_WB.reg_dest in necesarios:
+            return True
+
+        return False
+
+    ##ESTA ESTA FATAL TAMBIEN
     def imprimir_estado(self):
         stall_str = ""
         if getattr(self, "mensaje_burbuja", "") != "":
