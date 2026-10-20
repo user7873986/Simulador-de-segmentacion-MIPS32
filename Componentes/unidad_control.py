@@ -1,13 +1,12 @@
+
 class UnidadControl:
     def __init__(self):
-        # Señales de control: RegDst, Branch, MemRead, etc.
         self.resetear_senales()
 
-
+    #dada una instrucción saca las señales
     def decodificar(self, instruccion_str):
         self.resetear_senales()
 
-        # Respuesta por defecto para burbujas
         resultado_vacio = {
             "opcode": "NOP", "rs": "", "rt": "", "rd": "",
             "inmediato": 0, "etiqueta": "", "senales": {}
@@ -16,7 +15,6 @@ class UnidadControl:
         if not instruccion_str or instruccion_str == "NOP":
             return resultado_vacio
 
-        # 'addi $s0, $0, 1' -> partes = ['addi', '$s0', '$0', '1']
         partes = instruccion_str.replace(',', '').split()
         opcode = partes[0].lower()
         args = partes[1:]
@@ -34,7 +32,6 @@ class UnidadControl:
         rs, rt, rd, etiqueta = "", "", "", ""
         inmediato = 0
 
-        # FORMATO R
         if opcode in ["add", "sub", "and", "or", "slt"]:
             self.reg_write = 1
             self.reg_dst = 1
@@ -45,7 +42,6 @@ class UnidadControl:
             rs = args[1].strip()
             rt = args[2].strip()
 
-        # FORMATO I (Aritmético)
         elif opcode in ["addi", "andi"]:
             self.reg_write = 1
             self.reg_dst = 0
@@ -56,20 +52,18 @@ class UnidadControl:
             rs = args[1].strip()
             inmediato = int(args[2].strip())
 
-        # FORMATO DESPLAZAMIENTOS
         elif opcode == "sll":
             self.reg_write = 1
             self.reg_dst = 1
             self.alu_src = 1
             self.mem_to_reg = 0
 
+            rs = "$zero"
             rd = args[0].strip()
             rt = args[1].strip()
             inmediato = int(args[2].strip())
 
-        # FORMATO MEMORIA
         elif opcode in ["lw", "sw"]:
-            # El enrutamiento es idéntico para ambos
             rt = args[0].strip()
             partes_mem = args[1].replace(')', '').split('(')
             inmediato = int(partes_mem[0].strip())
@@ -84,7 +78,6 @@ class UnidadControl:
             else:  # sw
                 self.mem_write = 1
 
-        # FORMATO SALTOS CONDICIONALES
         elif opcode in ["beq", "bne"]:
             self.branch = 1
 
@@ -92,14 +85,10 @@ class UnidadControl:
             rt = args[1].strip()
             etiqueta = args[2].strip()
 
-        # FORMATO SALTO INCONDICIONAL
         elif opcode == "j":
             self.jump = 1
             etiqueta = args[0].strip()
 
-        # ----------------------------------------
-
-        # EMPAQUETADO FINAL
         senales_control = {
             "alu_src": self.alu_src,
             "alu_op": self.alu_op,

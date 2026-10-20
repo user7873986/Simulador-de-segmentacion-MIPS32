@@ -27,6 +27,8 @@ Si hay una burbuja, la fase if de la siguiente instrucción a tratar no empieza
 FORWARDING
 ifs de los registros origen igualando al de destino y luego el valor del registro de origen lo igualas al resultado final con ambos registros origen el 1 y el 2
 
+Si hay un registro que no se reconoce se planta un 0
+
 RIESGOS DE CONTROL
 
 

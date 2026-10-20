@@ -1,3 +1,4 @@
+
 class MemoriaDatos:
     def __init__(self):
         self.datos = {0: 5} #Solo inicializamos esto aunque haya 2 a la 32 direcciones
@@ -11,7 +12,6 @@ class MemoriaDatos:
         if direccion % 4 != 0:
             raise ValueError(f"Excepción de Hardware: La dirección {direccion} no es múltiplo de 4.")
 
-        # Crea o sobreescribe
         self.datos[direccion] = valor
 
     #Como tal esto no lo debería de tener un HW pero por términos de POO lo hago aquí

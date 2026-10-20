@@ -1,6 +1,6 @@
+
 class BancoRegistros:
     def __init__(self):
-        # Un solo diccionario: Claves de texto y valores inicializados a 0
         self.registros = {
             "$0": 0, "$zero": 0,
             "$at": 0,
@@ -18,7 +18,7 @@ class BancoRegistros:
 
     def leer(self, reg_str):
         if self.registros.get(reg_str) == None:
-            raise ValueError(f"Excepción de Hardware: El banco de registros no contiene el registro {reg_str}")
+            return 0
         else:
             return self.registros[reg_str]
 
@@ -31,9 +31,8 @@ class BancoRegistros:
         registros_modificados = {reg: val for reg, val in self.registros.items() if val != 0}
 
         if not registros_modificados:
-            print("  (Todos los registros están a 0)")
+            print(" Todos los registros están en blanco ")
         else:
             for reg, val in registros_modificados.items():
                 print(f"  {reg} : {val}")
-
-        print("-" * 26)
+        print("--------------------------")

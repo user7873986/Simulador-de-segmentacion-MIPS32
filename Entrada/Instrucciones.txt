@@ -6,22 +6,21 @@ for:
 slt  $t3, $s1, $t0
 bne  $t3, $0, end_for
 
-sll  $s0, $s0, 1     #Igual que multiplicar por 2, a espera de respuesta profe
+sll  $s0, $s0, 1
 
 
 andi $t1, $t0, 1
-bne  $t1, $0, end_if #RAW en esta instrucción
+bne  $t1, $0, end_if
 
 addi $s0, $s0, -1
 
 end_if:
 addi $t0, $t0, 1
-j    for             # salto incondicional hacia atrás
-
+j    for
 end_for:
-# para cumplir usos de memoria
+
 sw   $s0, 4($0)
 sw   $t0, 8($0)
 lw   $t4, 4($0)
-addi $v0, $0, 17     # Unica y exclusivamente para cumplir las 8
+addi $v0, $0, 17
 

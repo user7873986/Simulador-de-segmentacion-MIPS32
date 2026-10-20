@@ -3,30 +3,21 @@ from Componentes.banco_registros import BancoRegistros
 from Componentes.memoria_instrucciones import MemoriaInstrucciones
 from Componentes.pc import PC
 from Componentes.memoria_datos import MemoriaDatos
-from Componentes.registro_acoplamiento import RegistroAcoplamiento
-
+from Componentes.registros_acoplamiento import RegistroAcoplamiento, ID_EX, IF_ID, EX_MEM, MEM_WB
 
 class UnidadProceso:
     def __init__(self):
-        # Instanciamos los componentes de hardware
         self.pc = PC()
         self.banco_registros = BancoRegistros()
         self.alu = ALU()
 
-        # Memorias
         self.mem_instrucciones = MemoriaInstrucciones()
         self.mem_datos = MemoriaDatos()
 
-        # inicialmente comprobamos que están limpio
-        self.ID_EX = RegistroAcoplamiento()
-        self.IF_ID = RegistroAcoplamiento()
-        self.EX_MEM = RegistroAcoplamiento()
-        self.MEM_WB = RegistroAcoplamiento()
+        self.ID_EX = ID_EX()
+        self.IF_ID = IF_ID()
+        self.EX_MEM = EX_MEM()
+        self.MEM_WB = MEM_WB()
 
         self.WB_OUT = RegistroAcoplamiento()
 
-        """# Registros de acoplamiento (para controlar la segmentación/pipeline)
-        self.IF_ID = {}
-        self.ID_EX = {}
-        self.EX_MEM = {}
-        self.MEM_WB = {}"""
