@@ -1,0 +1,15 @@
+addi $t0, $0, 28
+addi $t2, $t0, 20
+lw $t1, 0($t0)
+addi $t0, $t0, 4
+bucle_max:
+beq $t0, $t2, fin_max
+lw $t3, 0($t0)
+slt $t4, $t1, $t3
+beq $t4, $0, menor
+add $t1, $0, $t3
+menor:
+addi $t0, $t0, 4
+j bucle_max
+fin_max:
+sw $t1, 0($0)

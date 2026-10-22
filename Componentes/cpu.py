@@ -28,7 +28,7 @@ class CPU:
 
         with open(ruta_instrucciones, 'r') as archivo:
             for linea in archivo:
-                linea = linea.strip()
+                linea = linea.split('#')[0].split(';')[0].strip()
 
                 if not linea:
                     continue

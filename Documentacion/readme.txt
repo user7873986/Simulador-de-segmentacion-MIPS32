@@ -50,6 +50,19 @@ fase_mem -> Lee: EX_MEM y Memoria de Datos | Escribe en: MEM_WB
 fase_wb  -> Lee: MEM_WB | Escribe en: Banco de Registros físico
 
 
+PARA LA MEMORIA
+•	La memoria debe relacionar explícitamente la salida del simulador con los elementos del MIPS de 32 bits y las cinco etapas;
+incluirá diagrama de clases y capturas de código.
+Se deben de comentar los tres casos de cortocircuito
+
+Para saltos, se deben de resolver en ID indicar qué sucede con los
+
+Elementos mínimos de una solución completa
+Clases para instrucción/programa/cauce; estado IF/ID, ID/EX, EX/MEM y MEM/WB; banco de registros; memoria; unidad de detección de riesgos; unidad de forwarding; tratamiento del load-use; decisión de salto en ID; traza de cada ciclo; pruebas que demuestren al menos tres RAW.
+
+
+
+
 
 
 

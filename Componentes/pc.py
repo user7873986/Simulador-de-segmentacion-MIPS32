@@ -7,3 +7,6 @@ class PC:
 
     def actualizar_pc(self):
         self.contador = self.contador + 1
+
+    def get_pc(self):
+        return self.contador

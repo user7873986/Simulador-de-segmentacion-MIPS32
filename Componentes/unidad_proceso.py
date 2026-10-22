@@ -1,6 +1,6 @@
 from Componentes.alu import ALU
 from Componentes.banco_registros import BancoRegistros
-from Componentes.forwarding_unit import ForwardingUnit
+from Componentes.unidad_forwarding import ForwardingUnit
 from Componentes.memoria_instrucciones import MemoriaInstrucciones
 from Componentes.pc import PC
 from Componentes.memoria_datos import MemoriaDatos

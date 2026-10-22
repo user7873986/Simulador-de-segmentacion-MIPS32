@@ -15,7 +15,7 @@ class UnidadControl:
         if not instruccion_str or instruccion_str == "NOP":
             return resultado_vacio
 
-        partes = instruccion_str.replace(',', '').split()
+        partes = instruccion_str.replace(',', ' ').split()
         opcode = partes[0].lower()
         args = partes[1:]
 
@@ -58,9 +58,9 @@ class UnidadControl:
             self.alu_src = 1
             self.mem_to_reg = 0
 
-            rs = "$zero"
+            rs = args[1].strip()
             rd = args[0].strip()
-            rt = args[1].strip()
+            rt = "$zero"
             inmediato = int(args[2].strip())
 
         elif opcode in ["lw", "sw"]:

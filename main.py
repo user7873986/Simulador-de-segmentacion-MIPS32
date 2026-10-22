@@ -7,7 +7,8 @@ def main():
     procesador = CPU()
 
     procesador.cargar_instrucciones("Entrada/Instrucciones.txt")
-    #procesador.cargar_instrucciones("Entrada/ejemploInstruccion.txt")
+    procesador.cargar_datos("Entrada/Datos.txt")
+    #procesador.cargar_instrucciones("Entrada/ejemplo3.txt")
     ejemplo = Segmentacion(procesador)
     ejemplo.simular()
 

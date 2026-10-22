@@ -1,0 +1,8 @@
+addi $t0, $0, 28
+lw $t1, 0($t0)
+sll $t2, $t1, 1
+lw $t3, 4($t0)
+sll $t4, $t3, 2
+add $s0, $t2, $t4
+addi $t5, $0, 4
+sw $s0, 0($t5)

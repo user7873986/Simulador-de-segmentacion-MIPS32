@@ -29,8 +29,7 @@ class ALU:
             self.resultado = 1 if op1 < op2 else 0
 
         elif alu_op == "SLL":
-            self.resultado = op1* math.pow(2,op2) #En vez de convertirlo a binario hago esta "trampa para que multiplique por 2"
-
+            self.resultado = op1 << op2
         else:
             self.resultado = 0
 

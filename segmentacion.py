@@ -1,3 +1,6 @@
+from Componentes import unidad_riesgos
+from Componentes.unidad_riesgos import UnidadRiesgos
+
 
 class Segmentacion:
     def __init__(self, cpu):
@@ -8,6 +11,7 @@ class Segmentacion:
         self.burbuja = False
         self.mensaje_burbuja = ""
         self.mensaje_salto = ""
+        self.unidad_riesgos = UnidadRiesgos(cpu.unidad_proceso)
 
     def simular(self):
         while not self.fin:
@@ -29,6 +33,8 @@ class Segmentacion:
                     self.cpu.unidad_proceso.EX_MEM.inst in [None, "NOP"] and
                     self.cpu.unidad_proceso.MEM_WB.inst in [None, "NOP"]):
                 self.fin = True
+
+            #input("Presiona Enter para continuar...")
 
 
     def iff(self):
@@ -66,10 +72,10 @@ class Segmentacion:
         val_rs = self.cpu.unidad_proceso.banco_registros.leer(rs)
         val_rt = self.cpu.unidad_proceso.banco_registros.leer(rt)
 
-        if opcode == "bne":
+        if opcode in ["bne","beq"]:
             etiqueta = decodificado["etiqueta"]
 
-            if self.tiene_riesgo_salto(rs,rt):
+            if self.unidad_riesgos.tiene_riesgo_salto(rs,rt):
                 self.burbuja = True
                 self.mensaje_burbuja = "BURBUJA"
                 self.burbuja_id()
@@ -78,13 +84,20 @@ class Segmentacion:
             val1 = self.cpu.unidad_proceso.banco_registros.leer(rs)
             val2 = self.cpu.unidad_proceso.banco_registros.leer(rt)
 
-            if val1 != val2:
+            salta = False
+            if opcode == "beq" and val1 == val2:
+                salta = True
+            elif opcode == "bne" and val1 != val2:
+                salta = True
+
+            if salta:
                 nuevo_pc = self.cpu.etiquetas.get(etiqueta)
                 self.cpu.unidad_proceso.pc.set_pc(nuevo_pc)
                 self.mensaje_salto = f"[salto resuelto en ID: condición cumplida -> nuevo PC {nuevo_pc}]"
                 self.cpu.unidad_proceso.IF_ID.inst = "NOP"
             else:
                 self.mensaje_salto = f"[salto resuelto en ID: condición fallida -> no salta]"
+
 
             self.burbuja_id()
             return
@@ -97,16 +110,11 @@ class Segmentacion:
             self.burbuja_id()
             return
 
-        #OJO MIRAR AQUI
-        if self.cpu.unidad_proceso.ID_EX.inst not in [None, "NOP"]:
-            ex_mem_read = self.cpu.unidad_proceso.ID_EX.senales.get("mem_read")
-            ex_rt = self.cpu.unidad_proceso.ID_EX.rt
-
-            if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
-                self.burbuja = True
-                self.mensaje_burbuja = "STALL(load-use)"
-                self.burbuja_id()
-                return
+        if self.unidad_riesgos.tiene_riesgo_raw(rs,rt):
+            self.burbuja = True
+            self.mensaje_burbuja = "STALL(load-use)"
+            self.burbuja_id()
+            return
 
         self.cpu.unidad_proceso.ID_EX.inst = inst
         self.cpu.unidad_proceso.ID_EX.pc = pc
@@ -246,34 +254,7 @@ class Segmentacion:
         self.cpu.unidad_proceso.MEM_WB.reg_dest = ""
         self.cpu.unidad_proceso.MEM_WB.senales = {"reg_write": 0, "mem_to_reg": 0}
 
-    def tiene_riesgo_raw(self,rs,rt):
-        #solo cuando hay un lw antes
-        if self.cpu.unidad_proceso.ID_EX.inst not in [None, "NOP"]:
-            ex_mem_read = self.cpu.unidad_proceso.ID_EX.senales.get("mem_read", 0)
-            ex_rt = self.cpu.unidad_proceso.ID_EX.rt
-            if ex_mem_read == 1 and ex_rt in [rs, rt] and ex_rt not in ["", "$0", "$zero"]:
-                return True
-        return False
 
-    def tiene_riesgo_salto(self,rs,rt):
-        necesarios = [reg for reg in (rs, rt) if reg not in ("", "$0", "$zero")]
-
-        if not necesarios:
-            return False
-
-        if self.cpu.unidad_proceso.ID_EX.senales.get("reg_write") == 1:
-            reg_dst = self.cpu.unidad_proceso.ID_EX.senales.get("reg_dst")
-            destino = self.cpu.unidad_proceso.ID_EX.rd if reg_dst == 1 else self.cpu.unidad_proceso.ID_EX.rt
-            if destino in necesarios:
-                return True
-
-        if self.cpu.unidad_proceso.EX_MEM.senales.get("reg_write") == 1 and self.cpu.unidad_proceso.EX_MEM.reg_dest in necesarios:
-            return True
-
-        if self.cpu.unidad_proceso.MEM_WB.senales.get("reg_write") == 1 and self.cpu.unidad_proceso.MEM_WB.reg_dest in necesarios:
-            return True
-
-        return False
 
     ##ESTA ESTA FATAL TAMBIEN
     def imprimir_estado(self):
@@ -300,6 +281,8 @@ class Segmentacion:
         print("-" * 75)
         self.cpu.unidad_proceso.banco_registros.imprimir_registros()
         self.cpu.unidad_proceso.mem_datos.imprimir_memoria()
+
+        print(f"PC:{self.cpu.unidad_proceso.pc.get_pc()}")
 
         etiquetas = self.cpu.etiquetas
         if etiquetas:
