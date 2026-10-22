@@ -57,11 +57,11 @@ class Segmentacion:
         inst = self.cpu.unidad_proceso.IF_ID.inst
         pc = self.cpu.unidad_proceso.IF_ID.pc
 
-        decodificado = self.cpu.unidad_control.decodificar(inst)
-
         if not inst or inst == "NOP":
             self.burbuja_id()
             return
+
+        decodificado = self.cpu.unidad_control.decodificar(inst)
 
         rs = decodificado["rs"]
         rt = decodificado["rt"]
