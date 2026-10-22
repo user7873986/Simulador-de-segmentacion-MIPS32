@@ -7,7 +7,6 @@ class ALU:
         self.entrada1 = 0
         self.entrada2 = 0
         self.resultado = 0
-        self.zero = 0
 
     def ejecutar(self, alu_op):
         op1 = self.entrada1
@@ -32,9 +31,3 @@ class ALU:
             self.resultado = op1 << op2
         else:
             self.resultado = 0
-
-        # Floag zero
-        if self.resultado == 0:
-            self.zero = 1
-        else:
-            self.zero = 0
