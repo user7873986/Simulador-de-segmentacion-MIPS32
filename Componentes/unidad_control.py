@@ -4,7 +4,7 @@ class UnidadControl:
         self.resetear_senales()
 
     #dada una instrucción saca las señales
-    def decodificar(self, instruccion_str):
+    def decodificar(self, instr):
         self.resetear_senales()
 
         resultado_vacio = {
@@ -12,10 +12,10 @@ class UnidadControl:
             "inmediato": 0, "etiqueta": "", "senales": {}
         }
 
-        if not instruccion_str or instruccion_str == "NOP":
+        if not instr or instr == "NOP":
             return resultado_vacio
 
-        partes = instruccion_str.replace(',', ' ').split()
+        partes = instr.replace(',', ' ').split()
         opcode = partes[0].lower()
         args = partes[1:]
 

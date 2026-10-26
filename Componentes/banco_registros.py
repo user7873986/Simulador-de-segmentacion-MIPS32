@@ -16,15 +16,15 @@ class BancoRegistros:
             "$ra": 0
         }
 
-    def leer(self, reg_str):
-        if self.registros.get(reg_str) == None:
+    def leer(self, reg):
+        if self.registros.get(reg) == None:
             return 0
         else:
-            return self.registros[reg_str]
+            return self.registros[reg]
 
-    def escribir(self, reg_str, valor):
-        if reg_str not in ["$0", "$zero"] and reg_str in self.registros:
-            self.registros[reg_str] = valor
+    def escribir(self, reg, valor):
+        if reg not in ["$0", "$zero"] and reg in self.registros:
+            self.registros[reg] = valor
 
     def imprimir_registros(self):
         print("\n--- BANCO DE REGISTROS ---")
