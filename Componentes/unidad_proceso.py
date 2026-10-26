@@ -4,7 +4,8 @@ from Componentes.unidad_forwarding import ForwardingUnit
 from Componentes.memoria_instrucciones import MemoriaInstrucciones
 from Componentes.pc import PC
 from Componentes.memoria_datos import MemoriaDatos
-from Componentes.registros_acoplamiento import RegistroAcoplamiento, ID_EX, IF_ID, EX_MEM, MEM_WB
+from Componentes.registros_acoplamiento import ID_EX, IF_ID, EX_MEM, MEM_WB, WB_OUT
+
 
 class UnidadProceso:
     def __init__(self):
@@ -21,5 +22,5 @@ class UnidadProceso:
         self.EX_MEM = EX_MEM()
         self.MEM_WB = MEM_WB()
 
-        self.WB_OUT = RegistroAcoplamiento()
+        self.WB_OUT = WB_OUT()
 

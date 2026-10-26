@@ -14,6 +14,7 @@ El pc se suma de uno en uno; Mientras que las direcciones en memoria van de 4 en
 se ha implementado una clase llamada forwarding que evalúa si se necesita hacer y adelanta el dato
 
 
+
 RIESGOS DE DATOS
 Entre los riesgos de datos RAW distinguimos dos tipos; LOAD-USE  y RAW entre aritméticas.
 El riesgo LOAD-USE se da cuando una instrucción lw precede a una aritmética que necesita el dato que recupera de memoria lw, para solucionar este problema
@@ -62,7 +63,10 @@ Clases para instrucción/programa/cauce; estado IF/ID, ID/EX, EX/MEM y MEM/WB; b
 
 
 
-
+ANTES DE ENTREGAR
+Verificar el código sobretodo de segmentacion y de la última función para comprobar que es legible y no hay cosas raras
+Se siguen patrones tanto en la nombración de variables como en orden de las funciones (tdo en ingles o en español)
+Se actualiza el diagrama de clases correspondiente con la versión final
 
 
 

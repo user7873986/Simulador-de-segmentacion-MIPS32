@@ -1,0 +1,1311 @@
+Iniciando simulación MIPS32...
+
+Ciclo 01
+IF: addi $t0, $0, 28 | ID: -- | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:1
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 02
+IF: addi $t2, $t0, 20 | ID: addi $t0, $0, 28 | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:2
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 03
+IF: lw $t1, 0($t0) | ID: addi $t2, $t0, 20 | EX: addi $t0, $0, 28 | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:3
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 04
+IF: addi $t0, $t0, 4 | ID: lw $t1, 0($t0) | EX: addi $t2, $t0, 20 | MEM: addi $t0, $0, 28 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:4
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 05
+IF: beq $t0, $t2, fin_max | ID: addi $t0, $t0, 4 | EX: lw $t1, 0($t0) | MEM: addi $t2, $t0, 20 | WB: addi $t0, $0, 28
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 06  STALL(BURBUJA)
+IF: beq $t0, $t2, fin_max | ID: -- | EX: addi $t0, $t0, 4 | MEM: lw $t1, 0($t0) | WB: addi $t2, $t0, 20
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t2 : 48
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 07  STALL(BURBUJA)
+IF: beq $t0, $t2, fin_max | ID: -- | EX: -- | MEM: addi $t0, $t0, 4 | WB: lw $t1, 0($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 48
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 08
+IF: lw $t3, 0($t0) | ID: -- | EX: -- | MEM: -- | WB: addi $t0, $t0, 4
+[salto resuelto en ID: condición fallida -> no salta]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:6
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 09
+IF: slt $t4, $t1, $t3 | ID: lw $t3, 0($t0) | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 10  STALL(STALL(load-use))
+IF: slt $t4, $t1, $t3 | ID: -- | EX: lw $t3, 0($t0) | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 11
+IF: beq $t4, $0, menor | ID: slt $t4, $t1, $t3 | EX: -- | MEM: lw $t3, 0($t0) | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 12  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: slt $t4, $t1, $t3 | MEM: -- | WB: lw $t3, 0($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+  $t3 : 20
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 13  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: -- | MEM: slt $t4, $t1, $t3 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+  $t3 : 20
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 14
+IF: add $t1, $0, $t3 | ID: -- | EX: -- | MEM: -- | WB: slt $t4, $t1, $t3
+[salto resuelto en ID: condición fallida -> no salta]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:9
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 15
+IF: addi $t0, $t0, 4 | ID: add $t1, $0, $t3 | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:10
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 16
+IF: j bucle_max | ID: addi $t0, $t0, 4 | EX: add $t1, $0, $t3 | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:11
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 17
+IF: beq $t0, $t2, fin_max | ID: -- | EX: addi $t0, $t0, 4 | MEM: add $t1, $0, $t3 | WB: --
+[salto incondicional -> nuevo PC 4]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 10
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 18  STALL(BURBUJA)
+IF: beq $t0, $t2, fin_max | ID: -- | EX: -- | MEM: addi $t0, $t0, 4 | WB: add $t1, $0, $t3
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 32
+  $t1 : 20
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 19
+IF: lw $t3, 0($t0) | ID: -- | EX: -- | MEM: -- | WB: addi $t0, $t0, 4
+[salto resuelto en ID: condición fallida -> no salta]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:6
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 20
+IF: slt $t4, $t1, $t3 | ID: lw $t3, 0($t0) | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 21  STALL(STALL(load-use))
+IF: slt $t4, $t1, $t3 | ID: -- | EX: lw $t3, 0($t0) | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 22
+IF: beq $t4, $0, menor | ID: slt $t4, $t1, $t3 | EX: -- | MEM: lw $t3, 0($t0) | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 20
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 23  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: slt $t4, $t1, $t3 | MEM: -- | WB: lw $t3, 0($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 24  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: -- | MEM: slt $t4, $t1, $t3 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 25
+IF: add $t1, $0, $t3 | ID: -- | EX: -- | MEM: -- | WB: slt $t4, $t1, $t3
+[salto resuelto en ID: condición fallida -> no salta]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:9
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 26
+IF: addi $t0, $t0, 4 | ID: add $t1, $0, $t3 | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:10
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 27
+IF: j bucle_max | ID: addi $t0, $t0, 4 | EX: add $t1, $0, $t3 | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:11
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 28
+IF: beq $t0, $t2, fin_max | ID: -- | EX: addi $t0, $t0, 4 | MEM: add $t1, $0, $t3 | WB: --
+[salto incondicional -> nuevo PC 4]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 20
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 29  STALL(BURBUJA)
+IF: beq $t0, $t2, fin_max | ID: -- | EX: -- | MEM: addi $t0, $t0, 4 | WB: add $t1, $0, $t3
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 36
+  $t1 : 55
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 30
+IF: lw $t3, 0($t0) | ID: -- | EX: -- | MEM: -- | WB: addi $t0, $t0, 4
+[salto resuelto en ID: condición fallida -> no salta]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:6
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 31
+IF: slt $t4, $t1, $t3 | ID: lw $t3, 0($t0) | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 32  STALL(STALL(load-use))
+IF: slt $t4, $t1, $t3 | ID: -- | EX: lw $t3, 0($t0) | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 33
+IF: beq $t4, $0, menor | ID: slt $t4, $t1, $t3 | EX: -- | MEM: lw $t3, 0($t0) | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 55
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 34  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: slt $t4, $t1, $t3 | MEM: -- | WB: lw $t3, 0($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 35  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: -- | MEM: slt $t4, $t1, $t3 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+  $t4 : 1
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 36
+IF: addi $t0, $t0, 4 | ID: -- | EX: -- | MEM: -- | WB: slt $t4, $t1, $t3
+[salto resuelto en ID: condición cumplida -> nuevo PC 9]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:10
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 37
+IF: j bucle_max | ID: addi $t0, $t0, 4 | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:11
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 38
+IF: beq $t0, $t2, fin_max | ID: -- | EX: addi $t0, $t0, 4 | MEM: -- | WB: --
+[salto incondicional -> nuevo PC 4]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 39  STALL(BURBUJA)
+IF: beq $t0, $t2, fin_max | ID: -- | EX: -- | MEM: addi $t0, $t0, 4 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 40
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 40
+IF: lw $t3, 0($t0) | ID: -- | EX: -- | MEM: -- | WB: addi $t0, $t0, 4
+[salto resuelto en ID: condición fallida -> no salta]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:6
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 41
+IF: slt $t4, $t1, $t3 | ID: lw $t3, 0($t0) | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 42  STALL(STALL(load-use))
+IF: slt $t4, $t1, $t3 | ID: -- | EX: lw $t3, 0($t0) | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 43
+IF: beq $t4, $0, menor | ID: slt $t4, $t1, $t3 | EX: -- | MEM: lw $t3, 0($t0) | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 40
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 44  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: slt $t4, $t1, $t3 | MEM: -- | WB: lw $t3, 0($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 45  STALL(BURBUJA)
+IF: beq $t4, $0, menor | ID: -- | EX: -- | MEM: slt $t4, $t1, $t3 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 46
+IF: addi $t0, $t0, 4 | ID: -- | EX: -- | MEM: -- | WB: slt $t4, $t1, $t3
+[salto resuelto en ID: condición cumplida -> nuevo PC 9]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:10
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 47
+IF: j bucle_max | ID: addi $t0, $t0, 4 | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:11
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 48
+IF: beq $t0, $t2, fin_max | ID: -- | EX: addi $t0, $t0, 4 | MEM: -- | WB: --
+[salto incondicional -> nuevo PC 4]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 49  STALL(BURBUJA)
+IF: beq $t0, $t2, fin_max | ID: -- | EX: -- | MEM: addi $t0, $t0, 4 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 44
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 50
+IF: sw $t1, 0($0) | ID: -- | EX: -- | MEM: -- | WB: addi $t0, $t0, 4
+[salto resuelto en ID: condición cumplida -> nuevo PC 11]
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 48
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:12
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 51
+IF: None | ID: sw $t1, 0($0) | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 48
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:13
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 52
+IF: None | ID: -- | EX: sw $t1, 0($0) | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 48
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:14
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 53
+IF: None | ID: -- | EX: -- | MEM: sw $t1, 0($0) | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 48
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 55
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:15
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+
+Ciclo 54
+IF: None | ID: -- | EX: -- | MEM: -- | WB: sw $t1, 0($0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 48
+  $t1 : 55
+  $t2 : 48
+  $t3 : 50
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 55
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:16
+ETIQUETAS: bucle_max: PC 4 | menor: PC 9 | fin_max: PC 11
+---------------------------------------------------------------------------
+Simulación finalizada.

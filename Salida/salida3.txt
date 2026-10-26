@@ -1,0 +1,327 @@
+Iniciando simulación MIPS32...
+
+Ciclo 01
+IF: addi $t0, $0, 28 | ID: -- | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:1
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 02
+IF: lw $t1, 0($t0) | ID: addi $t0, $0, 28 | EX: -- | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:2
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 03
+IF: sll $t2, $t1, 1 | ID: lw $t1, 0($t0) | EX: addi $t0, $0, 28 | MEM: -- | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:3
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 04  STALL(STALL(load-use))
+IF: sll $t2, $t1, 1 | ID: -- | EX: lw $t1, 0($t0) | MEM: addi $t0, $0, 28 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+ Todos los registros están en blanco
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:3
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 05
+IF: lw $t3, 4($t0) | ID: sll $t2, $t1, 1 | EX: -- | MEM: lw $t1, 0($t0) | WB: addi $t0, $0, 28
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:4
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 06
+IF: sll $t4, $t3, 2 | ID: lw $t3, 4($t0) | EX: sll $t2, $t1, 1 | MEM: -- | WB: lw $t1, 0($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 07  STALL(STALL(load-use))
+IF: sll $t4, $t3, 2 | ID: -- | EX: lw $t3, 4($t0) | MEM: sll $t2, $t1, 1 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:5
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 08
+IF: add $s0, $t2, $t4 | ID: sll $t4, $t3, 2 | EX: -- | MEM: lw $t3, 4($t0) | WB: sll $t2, $t1, 1
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:6
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 09
+IF: addi $t5, $0, 4 | ID: add $s0, $t2, $t4 | EX: sll $t4, $t3, 2 | MEM: -- | WB: lw $t3, 4($t0)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+  $t3 : 20
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:7
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 10
+IF: sw $s0, 0($t5) | ID: addi $t5, $0, 4 | EX: add $s0, $t2, $t4 | MEM: sll $t4, $t3, 2 | WB: --
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+  $t3 : 20
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:8
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 11
+IF: None | ID: sw $s0, 0($t5) | EX: addi $t5, $0, 4 | MEM: add $s0, $t2, $t4 | WB: sll $t4, $t3, 2
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+  $t3 : 20
+  $t4 : 80
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:9
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 12
+IF: None | ID: -- | EX: sw $s0, 0($t5) | MEM: addi $t5, $0, 4 | WB: add $s0, $t2, $t4
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+  $t3 : 20
+  $t4 : 80
+  $s0 : 100
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 0
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:10
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 13
+IF: None | ID: -- | EX: -- | MEM: sw $s0, 0($t5) | WB: addi $t5, $0, 4
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+  $t3 : 20
+  $t4 : 80
+  $t5 : 4
+  $s0 : 100
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 100
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:11
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+
+Ciclo 14
+IF: None | ID: -- | EX: -- | MEM: -- | WB: sw $s0, 0($t5)
+---------------------------------------------------------------------------
+
+--- BANCO DE REGISTROS ---
+  $t0 : 28
+  $t1 : 10
+  $t2 : 20
+  $t3 : 20
+  $t4 : 80
+  $t5 : 4
+  $s0 : 100
+--------------------------
+--- MEMORIA ---
+ Direccion 0: Valor : 12
+ Direccion 4: Valor : 100
+ Direccion 16: Valor : -12
+ Direccion 28: Valor : 10
+ Direccion 32: Valor : 20
+ Direccion 36: Valor : 55
+ Direccion 40: Valor : 40
+ Direccion 44: Valor : 50
+
+PC:12
+ETIQUETAS: (ninguna)
+---------------------------------------------------------------------------
+Simulación finalizada.

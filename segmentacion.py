@@ -18,13 +18,11 @@ class Segmentacion:
             self.ciclo_actual += 1
 
             # Ejecutamos en orden inverso para no pisar los registros de acoplamiento
-            self.wb()  # parametros de entrada son el contenido de ex/mem o si el flag de operacion nula. NO devuelve nada
-            self.mem()  # utiliza el ex/mem
-            self.ex()  # aqui tocamos cosas fisicas y la funcion ex guarda algo en el registro de acoplamiento ex/mem, pero no puede hacerlo ahora asiq lo guarda en un ax
-
-            # aqui ya podemos guardar en ex/mem
-            self.id()  # devuelve informacion que se guarda en el id
-            self.iff()  # dado el pc devuelve la instruccion que guarda en if/id
+            self.wb()
+            self.mem()
+            self.ex()
+            self.id()
+            self.iff()
 
             self.imprimir_estado()
 
@@ -36,7 +34,7 @@ class Segmentacion:
 
             #input("Presiona Enter para continuar...")
 
-
+    # dado el pc devuelve la instruccion que guarda en if/id
     def iff(self):
         if self.burbuja:
             self.burbuja = False
@@ -97,7 +95,6 @@ class Segmentacion:
                 self.cpu.unidad_proceso.IF_ID.inst = "NOP"
             else:
                 self.mensaje_salto = f"[salto resuelto en ID: condición fallida -> no salta]"
-
 
             self.burbuja_id()
             return
@@ -229,9 +226,6 @@ class Segmentacion:
                 self.cpu.unidad_proceso.banco_registros.escribir(reg_dest, valor)
 
         self.cpu.unidad_proceso.WB_OUT.inst = inst
-        self.cpu.unidad_proceso.WB_OUT.reg_dest = reg_dest
-        self.cpu.unidad_proceso.WB_OUT.dato_wb = valor
-        self.cpu.unidad_proceso.WB_OUT.reg_write = senales.get("reg_write")
 
 
     def burbuja_id(self):
@@ -255,40 +249,39 @@ class Segmentacion:
         self.cpu.unidad_proceso.MEM_WB.senales = {"reg_write": 0, "mem_to_reg": 0}
 
 
-
-    ##ESTA ESTA FATAL TAMBIEN
     def imprimir_estado(self):
-        stall_str = ""
-        if getattr(self, "mensaje_burbuja", "") != "":
-            stall_str = f"  STALL({self.mensaje_burbuja})"
+        aviso_stall = ""
+        if self.mensaje_burbuja != "":
+            aviso_stall = f"  STALL({self.mensaje_burbuja})"
             self.mensaje_burbuja = ""
 
-        print(f"\nCiclo {self.ciclo_actual:02d}{stall_str}")
+        print(f"\nCiclo {self.ciclo_actual}{aviso_stall}")
 
+        instruccion_if = self.cpu.unidad_proceso.IF_ID.inst if self.cpu.unidad_proceso.IF_ID.inst != "NOP" else "--"
+        instruccion_id = self.cpu.unidad_proceso.ID_EX.inst if self.cpu.unidad_proceso.ID_EX.inst != "NOP" else "--"
+        instruccion_ex = self.cpu.unidad_proceso.EX_MEM.inst if self.cpu.unidad_proceso.EX_MEM.inst != "NOP" else "--"
+        instruccion_mem = self.cpu.unidad_proceso.MEM_WB.inst if self.cpu.unidad_proceso.MEM_WB.inst != "NOP" else "--"
+        instruccion_wb = self.cpu.unidad_proceso.WB_OUT.inst if self.cpu.unidad_proceso.WB_OUT.inst != "NOP" else "--"
 
-        _if = self.cpu.unidad_proceso.IF_ID.inst if self.cpu.unidad_proceso.IF_ID.inst != "NOP" else "--"
-        _id = self.cpu.unidad_proceso.ID_EX.inst if self.cpu.unidad_proceso.ID_EX.inst != "NOP" else "--"
-        _ex = self.cpu.unidad_proceso.EX_MEM.inst if self.cpu.unidad_proceso.EX_MEM.inst != "NOP" else "--"
-        _mem = self.cpu.unidad_proceso.MEM_WB.inst if self.cpu.unidad_proceso.MEM_WB.inst != "NOP" else "--"
-        _wb = self.cpu.unidad_proceso.WB_OUT.inst if self.cpu.unidad_proceso.WB_OUT.inst != "NOP" else "--"
+        print(f"IF: {instruccion_if} | ID: {instruccion_id} | EX: {instruccion_ex} | MEM: {instruccion_mem} | WB: {instruccion_wb}")
 
-        print(f"IF: {_if} | ID: {_id} | EX: {_ex} | MEM: {_mem} | WB: {_wb}")
-
-        if getattr(self, "mensaje_salto", "") != "":
+        if self.mensaje_salto != "":
             print(self.mensaje_salto)
             self.mensaje_salto = ""
 
-        print("-" * 75)
+        print("---------------------------------------------------------------------------")
         self.cpu.unidad_proceso.banco_registros.imprimir_registros()
         self.cpu.unidad_proceso.mem_datos.imprimir_memoria()
 
         print(f"PC:{self.cpu.unidad_proceso.pc.get_pc()}")
 
-        etiquetas = self.cpu.etiquetas
+        etiquetas = ""
+        for nombre, valor in self.cpu.etiquetas.items():
+            etiquetas += f"{nombre}: {valor}" + " | "
+
         if etiquetas:
-            str_etiquetas = " | ".join([f"{nombre}: PC {valor}" for nombre, valor in etiquetas.items()])
-            print(f"ETIQUETAS: {str_etiquetas}")
+            print(f"ETIQUETAS: {etiquetas}")
         else:
             print("ETIQUETAS: (ninguna)")
 
-        print("-" * 75)
+        print("---------------------------------------------------------------------------")
